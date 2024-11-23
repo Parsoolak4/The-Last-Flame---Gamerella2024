@@ -1,7 +1,17 @@
+
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] LayerMask playerLayerMask;
+    [SerializeField] GameObject playerPrefab;
+    [SerializeField] Vector3 spawnOffset;
+    [SerializeField] GridData [] grids;
+
+    private Vector3 TILE_RIGHT_UNIT = new Vector2(1.2f, 0.7f);
+    private Vector3 TILE_UP_UNIT = new Vector2(-1.2f, 0.7f);
+
     public Grid Grid { get; private set; }
 
     public static GameManager Instance {
@@ -10,6 +20,10 @@ public class GameManager : MonoBehaviour
     }
 
     private static GameManager _instance;
+
+    private Camera mainCamera;
+    private GameObject gridParent;
+    private GameObject player;
 
     private void Awake() {
         if (_instance == null) {
@@ -20,6 +34,46 @@ public class GameManager : MonoBehaviour
         }
         Application.runInBackground = true;
         Cursor.visible = true;
+        mainCamera = GetComponentInChildren<Camera>();
+    }
+
+    private IEnumerator Start() {
+        StartGame();
+        yield break;
+    }
+
+    private void StartGame() {
+        Generate(grids[0]);
+    }
+
+    private void Generate(GridData gridData) {
+
+        // Generate Grid
+        if (gridParent == null) {
+            gridParent = new GameObject("GridParent");
+        }
+        Grid = new(gridData);
+        for (int i = 0; i < Grid.Points.GetLength(0); i++) {
+            for (int j = 0; j < Grid.Points.GetLength(1); j++) {
+                Grid.Points[i,j].gameObject = Instantiate(gridData.TilePrefab, transform.position + i * TILE_RIGHT_UNIT + j * TILE_UP_UNIT, Quaternion.identity, gridParent.transform);
+                Grid.Points[i, j].gameObject.GetComponentInChildren<SpriteRenderer>().sortingOrder = Grid.Points.GetLength(0) - i + Grid.Points.GetLength(1) - j;
+            }
+        }
+
+        // Spawn Player
+        player = Instantiate(playerPrefab, Grid.Points[0, 0].gameObject.transform.position + spawnOffset, Quaternion.identity);
+        // TODO : marke Grid.Points[0, 0]. as taken by player
+
+        // TODO : place all characaters and obstacles
+    }
+
+    private void Update() {
+        if(Input.GetMouseButtonDown(0)) {
+            RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector3.forward, 20, playerLayerMask);
+            if (hit) {
+                player.transform.position = hit.collider.transform.position + spawnOffset;
+            }
+        }
     }
 
     /*
