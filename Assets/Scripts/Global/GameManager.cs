@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] LayerMask playerLayerMask;
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] float cameraSpeed;
     [SerializeField] Vector3 spawnOffset;
     [SerializeField] GridData [] grids;
 
@@ -74,6 +75,8 @@ public class GameManager : MonoBehaviour
                 player.transform.position = hit.collider.transform.position + spawnOffset;
             }
         }
+        // Update Camera
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3 (0,0,-5), Time.deltaTime * cameraSpeed);
     }
 
     /*
