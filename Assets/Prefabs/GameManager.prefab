@@ -51,7 +51,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 2127597661098874845, guid: 3837f77f414c904459f5d088e21940bc,
     type: 3}
   cameraSpeed: 2.5
-  spawnOffset: {x: 0, y: 0.5, z: 0}
+  spawnOffset: {x: 0, y: 1.5, z: 0}
   grids:
   - {fileID: 11400000, guid: a25617fe40375c64bb4653dca574e604, type: 2}
 --- !u!1 &6483317664734072052

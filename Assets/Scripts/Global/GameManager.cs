@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
+    private UnitManager unitManager;
     private Camera mainCamera;
     private GameObject gridParent;
     private GameObject player;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
         Application.runInBackground = true;
         Cursor.visible = true;
         mainCamera = GetComponentInChildren<Camera>();
+        unitManager = new();
     }
 
     private IEnumerator Start() {
@@ -66,6 +68,7 @@ public class GameManager : MonoBehaviour
         // TODO : marke Grid.Points[0, 0]. as taken by player
 
         // TODO : place all characaters and obstacles
+        unitManager.Generate(gridData.Units);
     }
 
     private void Update() {
@@ -77,6 +80,7 @@ public class GameManager : MonoBehaviour
         }
         // Update Camera
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3 (0,0,-5), Time.deltaTime * cameraSpeed);
+        unitManager.Move();
     }
 
     /*
