@@ -83,11 +83,56 @@ public class UnitManager
 
         //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
-        ExecutePath(unit, selectedPath);
+        // ExecutePath(unit, selectedPath);
         
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
         
+    }
+
+    private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path)
+    {
+
+        List<Vector2Int> selectedPathTiles = new List<Vector2Int>();
+        foreach (UnitTypes.Direction dir in path.directions)
+        {
+            Vector2Int currPoint = unit.Index;
+            switch (dir)
+            {
+                case UnitTypes.Direction.N:
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.S:
+                    currPoint.y -= 1;
+                    break;
+                case UnitTypes.Direction.E:
+                    currPoint.x += 1;
+                    break;
+                case UnitTypes.Direction.W:
+                    currPoint.x -= 1;
+                    break;
+                case UnitTypes.Direction.NE:
+                    currPoint.x += 1;
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.NW:
+                    currPoint.x -= 1;
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.SE:
+                    currPoint.x += 1;
+                    currPoint.y -= 1;
+                    break;
+                case UnitTypes.Direction.SW:
+                    currPoint.x -= 1;
+                    currPoint.y -= 1;
+                    break;
+            }
+
+            selectedPathTiles.Add(currPoint);
+
+        }
+        return selectedPathTiles;
     }
 
 
