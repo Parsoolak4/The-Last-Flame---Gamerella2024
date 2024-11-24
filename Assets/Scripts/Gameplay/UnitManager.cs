@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,9 +38,9 @@ public class UnitManager
                 continue;
             }
 
-            int r = Random.Range(0, validStartPoints.Count);
+            int r = UnityEngine.Random.Range(0, validStartPoints.Count);
             Vector2Int startPoint = validStartPoints[r];
-            var element = Object.Instantiate(unitData.Prefab,
+            var element = GameObject.Instantiate(unitData.Prefab,
                 GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
                 Quaternion.identity).AddComponent<Unit>();
             element.Index = startPoint;
@@ -53,13 +55,14 @@ public class UnitManager
         units.Clear();
     }
 
-    public void Update() {
+    public IEnumerator Update(Action moveCallback) {
         foreach (var unit in units) {
-            Move(unit);
+            yield return Move(unit, moveCallback);
         }
+        yield break;
     }
 
-    private void Move(Unit unit)
+    private IEnumerator Move(Unit unit, Action moveCallback)
     {
         List<UnitTypes.Path> validPaths = new List<UnitTypes.Path>();
 
@@ -74,20 +77,44 @@ public class UnitManager
         if (validPaths.Count == 0)
         {
             Debug.Log("No valid paths available");
-            return;
+            yield break;
         }
 
         // Randomly select one of the valid paths
         int randomIndex = UnityEngine.Random.Range(0, validPaths.Count);
         UnitTypes.Path selectedPath = validPaths[randomIndex];
 
+        List<Vector2Int> tiles = selectedPathTiles(unit, selectedPath);
+
+        foreach(var tile in tiles) {
+            yield return MoveUnitToTile(unit, GameManager.Instance.Grid[tile.x, tile.y], GameManager.Instance.UnitMoveDuration);
+
+            GameManager.Instance.Grid[unit.Index.x, unit.Index.y].Unit = null;
+            unit.Index = new(tile.x, tile.y);
+            GameManager.Instance.Grid[tile.x, tile.y].Unit = unit;
+
+            moveCallback();
+        }
+
         //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
         // ExecutePath(unit, selectedPath);
-        
+
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
-        
+
+    }
+
+    private IEnumerator MoveUnitToTile(Unit unit, Tile tile, float unitMoveDuration) {
+        float time = 0;
+        Vector3 startPos = unit.transform.position;
+        while (time <= unitMoveDuration) {
+            unit.transform.position = Vector3.Lerp(startPos, tile.transform.position + spawnOffset, time / unitMoveDuration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        unit.transform.position = tile.transform.position + spawnOffset;
+        yield break;
     }
 
     private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path)
