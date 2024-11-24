@@ -128,8 +128,12 @@ public class GameManager : MonoBehaviour
         ReorderUnitSortingOrders();
 
         ShowAvailablePlayerMoves();
-        StartCoroutine(UpdateTurn());
+
+        if (updateRoutine != null) StopCoroutine(updateRoutine);
+        updateRoutine = StartCoroutine(UpdateTurn());
     }
+
+    private Coroutine updateRoutine;
 
     private void OnExitReached() {
         for (int i = 0; i < Grid.GetLength(0); i++) {
@@ -256,7 +260,7 @@ public class GameManager : MonoBehaviour
         // Player turn
         turn = Turn.Player;
         ShowAvailablePlayerMoves();
-        StartCoroutine(UpdateTurn());
+        updateRoutine = StartCoroutine(UpdateTurn());
         yield break;
     }
 
