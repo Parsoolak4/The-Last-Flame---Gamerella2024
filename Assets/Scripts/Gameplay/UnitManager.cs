@@ -22,16 +22,20 @@ public class UnitManager
         //GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = unit;
         //unit.Initialize(unitDatas[0].Movements);
 
-        foreach (UnitData unitData in unitDatas) {
+        foreach (UnitData unitData in unitDatas)
+        {
             // list of valid tiles
             List<Vector2Int> validStartPoints = new List<Vector2Int>();
-            foreach (Vector2Int stPoint in unitData.Startpoints) {
-                if (GameManager.Instance.Grid[stPoint.x, stPoint.y].Unit == null) {
+            foreach (Vector2Int stPoint in unitData.Startpoints)
+            {
+                if (GameManager.Instance.Grid[stPoint.x, stPoint.y].Unit == null)
+                {
                     validStartPoints.Add(stPoint);
                 }
             }
 
-            if (validStartPoints.Count == 0) {
+            if (validStartPoints.Count == 0)
+            {
                 Debug.Log("No valid paths available");
                 continue;
             }
@@ -41,6 +45,7 @@ public class UnitManager
             var element = Object.Instantiate(unitData.Prefab,
                 GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
                 Quaternion.identity).AddComponent<Unit>();
+            AudioManager.Instance.PlayUnitSpawnSound();
             element.Index = startPoint;
             GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = element;
             element.Initialize(unitData.Movements);  // Use unitData instead of unitDatas[0]
@@ -49,18 +54,23 @@ public class UnitManager
         }
     }
 
-    public void Clear() {
+    public void Clear()
+    {
+        AudioManager.Instance.PlayUnitClearSound();
         units.Clear();
     }
 
-    public void Update() {
-        foreach (var unit in units) {
+    public void Update()
+    {
+        foreach (var unit in units)
+        {
             Move(unit);
         }
     }
 
     private void Move(Unit unit)
     {
+        AudioManager.Instance.PlayUnitMoveSound();  // Play move sound
         List<UnitTypes.Path> validPaths = new List<UnitTypes.Path>();
 
         foreach (UnitTypes.Path path in unit.Movements.paths)
@@ -84,10 +94,10 @@ public class UnitManager
         //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
         // ExecutePath(unit, selectedPath);
-        
+
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
-        
+
     }
 
     private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path)
@@ -200,50 +210,53 @@ public class UnitManager
 
     private void ExecutePath(Unit unit, UnitTypes.Path path)
     {
-        foreach (UnitTypes.Direction dir in path.directions)
+        AudioManager.Instance.PlayUnitPathSound();
         {
-            Vector2Int currPoint = unit.Index;
-
-            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
-            Debug.Log("unit is moving from ");
-            
-            Debug.Log(currPoint.x);
-            Debug.Log(currPoint.y);
-            switch (dir)
+            foreach (UnitTypes.Direction dir in path.directions)
             {
-                case UnitTypes.Direction.N:
-                    currPoint.y += 1;
-                    break;
-                case UnitTypes.Direction.S:
-                    currPoint.y -= 1;
-                    break;
-                case UnitTypes.Direction.E:
-                    currPoint.x += 1;
-                    break;
-                case UnitTypes.Direction.W:
-                    currPoint.x -= 1;
-                    break;
-                case UnitTypes.Direction.NE:
-                    currPoint.x += 1;
-                    currPoint.y += 1;
-                    break;
-                case UnitTypes.Direction.NW:
-                    currPoint.x -= 1;
-                    currPoint.y += 1;
-                    break;
-                case UnitTypes.Direction.SE:
-                    currPoint.x += 1;
-                    currPoint.y -= 1;
-                    break;
-                case UnitTypes.Direction.SW:
-                    currPoint.x -= 1;
-                    currPoint.y -= 1;
-                    break;
-            }
+                Vector2Int currPoint = unit.Index;
 
-            unit.Index = currPoint;
-            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = unit;
-            unit.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position + spawnOffset;
+                GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
+                Debug.Log("unit is moving from ");
+
+                Debug.Log(currPoint.x);
+                Debug.Log(currPoint.y);
+                switch (dir)
+                {
+                    case UnitTypes.Direction.N:
+                        currPoint.y += 1;
+                        break;
+                    case UnitTypes.Direction.S:
+                        currPoint.y -= 1;
+                        break;
+                    case UnitTypes.Direction.E:
+                        currPoint.x += 1;
+                        break;
+                    case UnitTypes.Direction.W:
+                        currPoint.x -= 1;
+                        break;
+                    case UnitTypes.Direction.NE:
+                        currPoint.x += 1;
+                        currPoint.y += 1;
+                        break;
+                    case UnitTypes.Direction.NW:
+                        currPoint.x -= 1;
+                        currPoint.y += 1;
+                        break;
+                    case UnitTypes.Direction.SE:
+                        currPoint.x += 1;
+                        currPoint.y -= 1;
+                        break;
+                    case UnitTypes.Direction.SW:
+                        currPoint.x -= 1;
+                        currPoint.y -= 1;
+                        break;
+                }
+
+                unit.Index = currPoint;
+                GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = unit;
+                unit.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position + spawnOffset;
+            }
         }
     }
 }
