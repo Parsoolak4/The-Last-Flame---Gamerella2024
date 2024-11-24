@@ -50,6 +50,7 @@ MonoBehaviour:
     m_Bits: 1
   playerPrefab: {fileID: 2127597661098874845, guid: 3837f77f414c904459f5d088e21940bc,
     type: 3}
+  deadPlayerSprite: {fileID: 21300000, guid: 071a990c6f496754d83e545a091dce03, type: 3}
   exitPrefab: {fileID: 2127597661098874845, guid: a4f1f4f0fef413241a79220a50a0f0c7,
     type: 3}
   finalExitPrefab: {fileID: 2127597661098874845, guid: 098c23f722926074db526041fa3ae761,
@@ -61,6 +62,7 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 0, z: 0}
   cameraOffset: {x: 0, y: 2.5, z: 0}
   grids:
+  - {fileID: 11400000, guid: 6255367e382a2f74da2fd6d7cd2637d5, type: 2}
   - {fileID: 11400000, guid: 1f31d4b49ad9be04199eff1265cd11fd, type: 2}
   - {fileID: 11400000, guid: baa0c1dd729ce204fb7dd1d5eedf3c55, type: 2}
   - {fileID: 11400000, guid: 9d389bce151f2494b97193eb59bc12be, type: 2}
