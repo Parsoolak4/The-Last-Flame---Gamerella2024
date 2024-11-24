@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     private Vector3 TILE_UP_UNIT = new Vector2(-1.2f, 0.7f);
 
     public Tile[,] Grid { get; private set; }
+
+    public float UnitMoveDuration => unitMoveDuration;
     
     public static GameManager Instance {
         get { return _instance; }
@@ -171,9 +173,16 @@ public class GameManager : MonoBehaviour
 
         // NPC turn
         yield return new WaitUntil(() => turn == Turn.NPC);
+
+        for (int i = 0; i < Grid.GetLength(0); i++) {
+            for (int j = 0; j < Grid.GetLength(1); j++) {
+                Grid[i, j].SetColor(Color.white);
+            }
+        }
+
         yield return new WaitUntil(() => moveUnitRoutine == null);
 
-        unitManager.Update();
+        yield return unitManager.Update(ReorderUnitSortingOrders);
 
         // Player turn
         turn = Turn.Player;
@@ -183,12 +192,6 @@ public class GameManager : MonoBehaviour
     }
 
     private void ShowAvailablePlayerMoves() {
-
-        for (int i = 0; i < Grid.GetLength(0); i++) {
-            for (int j = 0; j < Grid.GetLength(1); j++) {
-                Grid[i, j].SetColor(Color.white);
-            }
-        }
 
         Tile tile = Grid[player.Index.x, player.Index.y];
 
