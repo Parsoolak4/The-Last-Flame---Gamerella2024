@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
         } else {
             Debug.Log("Game has won");
         }
+        currentGridIndex = 0;
+        StartGame();
         yield break;
     }
 
@@ -265,6 +267,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Tile prevSelectedTile;
+
     private void UpdatePlayer() {
 
         if (moveUnitRoutine != null) return;
@@ -276,7 +280,13 @@ public class GameManager : MonoBehaviour
 
             Tile tile = hit.collider.GetComponent<Tile>();
 
-            // TODO : highlight player moves at start of player turn
+            if(prevSelectedTile != null && tile != prevSelectedTile) {
+                prevSelectedTile.RemoveHighlight();
+            }
+
+            prevSelectedTile = tile;
+
+            tile.AddHighlight();
 
             if (Input.GetMouseButtonDown(0)) {
 
@@ -315,6 +325,11 @@ public class GameManager : MonoBehaviour
                 } else {
                     // Is occupied
                 }
+            }
+        } else {
+            if(prevSelectedTile) {
+                prevSelectedTile.RemoveHighlight();
+                prevSelectedTile = null;
             }
         }
     }
