@@ -19,7 +19,7 @@ MonoBehaviour:
   playerSpawn: {x: 0, y: 0}
   exitSpawn: {x: 5, y: 3}
   units:
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
+  - {fileID: 11400000, guid: 8ad4977c6da9a464fb22c119fedcaa5f, type: 2}
+  - {fileID: 11400000, guid: 8ad4977c6da9a464fb22c119fedcaa5f, type: 2}
+  - {fileID: 11400000, guid: 8ad4977c6da9a464fb22c119fedcaa5f, type: 2}
+  - {fileID: 11400000, guid: 8ad4977c6da9a464fb22c119fedcaa5f, type: 2}

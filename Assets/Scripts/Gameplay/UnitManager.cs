@@ -38,8 +38,10 @@ public class UnitManager
                 continue;
             }
 
+            int r = Random.Range(0, validStartPoints.Count);
             int r = UnityEngine.Random.Range(0, validStartPoints.Count);
             Vector2Int startPoint = validStartPoints[r];
+            var element = Object.Instantiate(unitData.Prefab,
             var element = GameObject.Instantiate(unitData.Prefab,
                 GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
                 Quaternion.identity).AddComponent<Unit>();
@@ -55,13 +57,19 @@ public class UnitManager
         units.Clear();
     }
 
+    public void Update() {
+        foreach (var unit in units) {
     public IEnumerator Update(Action moveCallback) {
         foreach (var unit in units) {
+
+
+            Move(unit);
             yield return Move(unit, moveCallback);
         }
         yield break;
     }
 
+    private void Move(Unit unit)
     private IEnumerator Move(Unit unit, Action moveCallback)
     {
         List<UnitTypes.Path> validPaths = new List<UnitTypes.Path>();
@@ -77,6 +85,7 @@ public class UnitManager
         if (validPaths.Count == 0)
         {
             Debug.Log("No valid paths available");
+            return;
             yield break;
         }
 
@@ -99,9 +108,11 @@ public class UnitManager
         //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
         // ExecutePath(unit, selectedPath);
+        
 
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
+        
 
     }
 
@@ -126,6 +137,9 @@ public class UnitManager
     {
 
         List<Vector2Int> selectedPathTiles = new List<Vector2Int>();
+
+        Vector2Int currPoint = unit.Index;
+
         foreach (UnitTypes.Direction dir in path.directions)
         {
             Vector2Int currPoint = unit.Index;
@@ -221,6 +235,7 @@ public class UnitManager
             // Check collision with other units
             if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != null)
             {
+                return false;
                 if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != GameManager.Instance.Player) {
                     return false;
                 }
