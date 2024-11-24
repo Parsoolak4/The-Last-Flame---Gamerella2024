@@ -10,18 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bbdf83b5fd85434daa593b7542141c5, type: 3}
-  m_Name: Deev_W
+  m_Name: Dragon
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2127597661098874845, guid: aebcb39dbcc43304cb4d6b28ed2188b3, type: 3}
+  prefab: {fileID: 2127597661098874845, guid: 51aa14cf356235447a0fdab56c692ac6, type: 3}
   movements:
     paths:
-    - directions: 00000000
-    - directions: 01000000
-    - directions: 02000000
-    - directions: 03000000
-    - directions: 05000000
-    - directions: 06000000
     - directions: 07000000
+    - directions: 06000000
+    - directions: 05000000
     - directions: 04000000
   startPoints:
   - {x: 4, y: 4}
