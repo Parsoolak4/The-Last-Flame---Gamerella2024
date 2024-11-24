@@ -62,6 +62,7 @@ MonoBehaviour:
   cameraOffset: {x: 0, y: 2.5, z: 0}
   grids:
   - {fileID: 11400000, guid: 1f31d4b49ad9be04199eff1265cd11fd, type: 2}
+  - {fileID: 11400000, guid: baa0c1dd729ce204fb7dd1d5eedf3c55, type: 2}
   - {fileID: 11400000, guid: 9d389bce151f2494b97193eb59bc12be, type: 2}
   - {fileID: 11400000, guid: a25617fe40375c64bb4653dca574e604, type: 2}
   - {fileID: 11400000, guid: 115daf344feb0854884484d8b498b10c, type: 2}
