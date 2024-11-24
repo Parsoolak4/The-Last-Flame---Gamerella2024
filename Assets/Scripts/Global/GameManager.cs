@@ -1,13 +1,13 @@
 
 using EasyTransition;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] LayerMask playerLayerMask;
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] Sprite deadPlayerSprite;
     [SerializeField] GameObject exitPrefab;
     [SerializeField] GameObject finalExitPrefab;
     [SerializeField] GameObject transitionPrefab;
@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
+    public AudioManager AudioManager { get; private set; }
+
     private Coroutine moveUnitRoutine;
     private UnitManager unitManager;
     private Camera mainCamera;
@@ -53,6 +55,7 @@ public class GameManager : MonoBehaviour
         Application.runInBackground = true;
         Cursor.visible = true;
         mainCamera = GetComponentInChildren<Camera>();
+        AudioManager = GetComponentInChildren<AudioManager>();
         unitManager = new();
     }
 
@@ -67,10 +70,13 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator EndGame(bool died) {
         if(died) {
+            player.GetComponent<SpriteRenderer>().sprite = deadPlayerSprite;
             Debug.Log("player is dead");
         } else {
             Debug.Log("Game has won");
         }
+        currentGridIndex = 0;
+        StartGame();
         yield break;
     }
 
@@ -128,6 +134,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator OnExitReachedRoutine() {
 
+        if (currentGridIndex == grids.Length) {
+            // TODO : Fire on
+        } else {
+            AudioManager.PlayLadder();
+        }
+
         Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
 
         yield return new WaitForSeconds(1f);
@@ -166,6 +178,7 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile) {
+        AudioManager.PlayPlayerMove();
         float time = 0;
         Vector3 startPos = unit.transform.position;
         while (time <= unitMoveDuration) {
@@ -265,6 +278,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Tile prevSelectedTile;
+
     private void UpdatePlayer() {
 
         if (moveUnitRoutine != null) return;
@@ -276,7 +291,13 @@ public class GameManager : MonoBehaviour
 
             Tile tile = hit.collider.GetComponent<Tile>();
 
-            // TODO : highlight player moves at start of player turn
+            if(prevSelectedTile != null && tile != prevSelectedTile) {
+                prevSelectedTile.RemoveHighlight();
+            }
+
+            prevSelectedTile = tile;
+
+            tile.AddHighlight();
 
             if (Input.GetMouseButtonDown(0)) {
 
@@ -315,6 +336,11 @@ public class GameManager : MonoBehaviour
                 } else {
                     // Is occupied
                 }
+            }
+        } else {
+            if(prevSelectedTile) {
+                prevSelectedTile.RemoveHighlight();
+                prevSelectedTile = null;
             }
         }
     }
