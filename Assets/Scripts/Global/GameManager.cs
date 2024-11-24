@@ -1,6 +1,7 @@
 
 using EasyTransition;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject exitPrefab;
     [SerializeField] GameObject finalExitPrefab;
     [SerializeField] GameObject transitionPrefab;
+    [SerializeField] float unitMoveDuration;
     [SerializeField] float cameraSpeed;
     [SerializeField] Vector3 spawnOffset;
     [SerializeField] Vector3 cameraOffset;
@@ -27,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
-    private Transition transition;
+    private Coroutine moveUnitRoutine;
     private UnitManager unitManager;
     private Camera mainCamera;
     private GameObject gridParent;
@@ -48,7 +50,6 @@ public class GameManager : MonoBehaviour
         Application.runInBackground = true;
         Cursor.visible = true;
         mainCamera = GetComponentInChildren<Camera>();
-        transition = GetComponentInChildren<Transition>();
         unitManager = new();
     }
 
@@ -98,6 +99,8 @@ public class GameManager : MonoBehaviour
         // Spawn all Units
         unitManager.Generate(gridData, gridData.Units, spawnOffset);
 
+        ReorderUnitSortingOrders();
+
         ShowAvailablePlayerMoves();
         StartCoroutine(UpdateTurn());
     }
@@ -136,6 +139,13 @@ public class GameManager : MonoBehaviour
         transition.OnGridLoaded();
     }
 
+    private void ReorderUnitSortingOrders() {
+        Unit[] units = FindObjectsOfType<Unit>();
+        foreach (Unit unit in units) {
+            unit.SetSortingOrder(Grid.GetLength(0) - unit.Index.x + Grid.GetLength(1) - unit.Index.y);
+        }
+    }
+
     private void Update() {
         UpdatePlayer();
         if (player != null) {
@@ -143,14 +153,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private IEnumerator MoveUnitToTile(Unit unit, Tile tile) {
+        float time = 0;
+        Vector3 startPos = unit.transform.position;
+        while (time <= unitMoveDuration) {
+            unit.transform.position = Vector3.Lerp(startPos, tile.transform.position + spawnOffset, time / unitMoveDuration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+        unit.transform.position = tile.transform.position + spawnOffset;
+        moveUnitRoutine = null;
+        ReorderUnitSortingOrders();
+        yield break;
+    }
+
     private IEnumerator UpdateTurn() {
 
         // NPC turn
         yield return new WaitUntil(() => turn == Turn.NPC);
-        turn = Turn.Player;
+        yield return new WaitUntil(() => moveUnitRoutine == null);
+
         unitManager.Update();
 
         // Player turn
+        turn = Turn.Player;
         ShowAvailablePlayerMoves();
         StartCoroutine(UpdateTurn());
         yield break;
@@ -214,6 +240,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdatePlayer() {
 
+        if (moveUnitRoutine != null) return;
         if (turn == Turn.NPC) return;
 
         RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector3.forward, 20, playerLayerMask);
@@ -237,14 +264,14 @@ public class GameManager : MonoBehaviour
                         tile.Index.y >= 0 && tile.Index.y < Grid.GetLength(1)) {
                         // Move the Player
                         if (tile.Unit == null) {
-                            player.transform.position = hit.collider.transform.position + spawnOffset;
+                            moveUnitRoutine = StartCoroutine(MoveUnitToTile(player, tile));
                             player.Index = tile.Index;
                             tile.Unit = player;
                             playerTile.Unit = null;
                             turn = Turn.NPC;
                         } else {
                             if(tile.Unit == exit) {
-                                player.transform.position = hit.collider.transform.position + spawnOffset;
+                                moveUnitRoutine = StartCoroutine(MoveUnitToTile(player, tile));
                                 player.Index = tile.Index;
                                 tile.Unit = player;
                                 playerTile.Unit = null;
