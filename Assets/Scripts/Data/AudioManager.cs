@@ -2,51 +2,33 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
-
     [Header("Audio Sources")]
-    [SerializeField] private AudioSource musicSource;
-    [SerializeField] private AudioSource sfxSource;
-    [SerializeField] private AudioSource unitSpawnSound;
-    [SerializeField] private AudioSource unitMoveSound;       // For Move method
-    [SerializeField] private AudioSource unitPathSound;       // For ExecutePath
-    [SerializeField] private AudioSource unitClearSound;     //       // For Clear method
+    [SerializeField] private AudioSource ladderSound;
+    [SerializeField] private AudioSource playerWonSound;
+    [SerializeField] private AudioSource playerDiedSound;
+    [SerializeField] private AudioSource playerMoveSound;
+    [SerializeField] private AudioSource unitMoveSound;
 
-    private void Awake()
+    public void PlayLadder()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        ladderSound.Play();
     }
 
-    public void PlayUnitSpawnSound()
-    {
-        if (unitSpawnSound != null)
-            //sfxSource.PlayOneShot();
-            unitSpawnSound.Play();
+    public void PlayPlayerMove() {
+        playerMoveSound.Play();
     }
 
-    public void PlayUnitMoveSound()
+    public void PlayUnitMove()
     {
-        //if (unitMoveSound != null)
         unitMoveSound.Play();
-
     }
 
-    public void PlayUnitPathSound()
+    public void PlayPlayerDied()
     {
-        if (unitPathSound != null)
-        unitPathSound.Play();
+        playerDiedSound.Play();
     }
 
-    public void PlayUnitClearSound()
-    {
-        if (unitClearSound != null)
-            unitClearSound.Play();
+    public void PlayPlayerWon() {
+        playerWonSound.Play();
     }
 }
