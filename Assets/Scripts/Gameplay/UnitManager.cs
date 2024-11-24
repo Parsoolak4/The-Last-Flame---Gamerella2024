@@ -82,12 +82,13 @@ public class UnitManager
         List<Vector2Int> tiles = selectedPathTiles(unit, selectedPath);
 
         foreach (var tile in tiles) {
+            GameManager.AudioManager.PlayUnitMove();
             yield return MoveUnitToTile(unit, GameManager.Instance.Grid[tile.x, tile.y], GameManager.Instance.UnitMoveDuration);
 
             GameManager.Instance.Grid[unit.Index.x, unit.Index.y].Unit = null;
             unit.Index = new(tile.x, tile.y);
             GameManager.Instance.Grid[tile.x, tile.y].Unit = unit;
-            GameManager.AudioManager.PlayUnitMove();
+            
             moveCallback();
         }
 
