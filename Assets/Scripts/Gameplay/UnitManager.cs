@@ -108,6 +108,11 @@ public class UnitManager
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile, float unitMoveDuration) {
         float time = 0;
         Vector3 startPos = unit.transform.position;
+
+        if(tile.Unit == GameManager.Instance.Player) {
+            GameManager.Instance.StartCoroutine(GameManager.Instance.EndGame(true));
+        }
+
         while (time <= unitMoveDuration) {
             unit.transform.position = Vector3.Lerp(startPos, tile.transform.position + spawnOffset, time / unitMoveDuration);
             time += Time.deltaTime;
@@ -216,7 +221,9 @@ public class UnitManager
             // Check collision with other units
             if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != null)
             {
-                return false;
+                if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != GameManager.Instance.Player) {
+                    return false;
+                }
             }
 
             finalPosition = nextPosition;

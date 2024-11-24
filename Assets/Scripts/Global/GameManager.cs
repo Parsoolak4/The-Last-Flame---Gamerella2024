@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public Tile[,] Grid { get; private set; }
 
     public float UnitMoveDuration => unitMoveDuration;
+    public Unit Player => player;
     
     public static GameManager Instance {
         get { return _instance; }
@@ -62,6 +63,15 @@ public class GameManager : MonoBehaviour
 
     private void StartGame() {
         Generate(grids[currentGridIndex]);
+    }
+
+    public IEnumerator EndGame(bool died) {
+        if(died) {
+            Debug.Log("player is dead");
+        } else {
+            Debug.Log("Game has won");
+        }
+        yield break;
     }
 
     private void Generate(GridData gridData) {
@@ -133,12 +143,12 @@ public class GameManager : MonoBehaviour
 
         currentGridIndex++;
         if (currentGridIndex == grids.Length) {
-            // TODO : game has ended
+            yield return EndGame(false);
+            transition.OnGridLoaded();
         } else {
             Generate(grids[currentGridIndex]);
+            transition.OnGridLoaded();
         }
-
-        transition.OnGridLoaded();
     }
 
     private void ReorderUnitSortingOrders() {
@@ -195,49 +205,63 @@ public class GameManager : MonoBehaviour
 
         Tile tile = Grid[player.Index.x, player.Index.y];
 
+        bool hasAvailableMoves = false;
+
         if (tile.Index.x + 1 < Grid.GetLength(0)) {
             if (Grid[tile.Index.x + 1, tile.Index.y].Unit) {
                 if(Grid[tile.Index.x + 1, tile.Index.y].Unit == exit) {
                     Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.green);
+                    hasAvailableMoves = true;
                 } else {
                     Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.red);
                 }
             } else {
                 Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.green);
+                hasAvailableMoves = true;
             }
         }
         if (tile.Index.x - 1 >= 0) {
             if (Grid[tile.Index.x - 1, tile.Index.y].Unit) {
                 if (Grid[tile.Index.x - 1, tile.Index.y].Unit == exit) {
                     Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.green);
+                    hasAvailableMoves = true;
                 } else {
                     Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.red);
                 }
             } else {
                 Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.green);
+                hasAvailableMoves = true;
             }
         }
         if (tile.Index.y + 1 < Grid.GetLength(1)) {
             if (Grid[tile.Index.x, tile.Index.y + 1].Unit) {
                 if (Grid[tile.Index.x, tile.Index.y + 1].Unit == exit) {
                     Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.green);
+                    hasAvailableMoves = true;
                 } else {
                     Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.red);
                 }
             } else {
                 Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.green);
+                hasAvailableMoves = true;
             }
         }
         if (tile.Index.y - 1 >= 0) {
             if (Grid[tile.Index.x, tile.Index.y - 1].Unit) {
                 if (Grid[tile.Index.x, tile.Index.y - 1].Unit == exit) {
                     Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.green);
+                    hasAvailableMoves = true;
                 } else {
                     Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.red);
                 }
             } else {
                 Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.green);
+                hasAvailableMoves = true;
             }
+        }
+
+        if(hasAvailableMoves == false) {
+            StartCoroutine(EndGame(true));
         }
     }
 
@@ -295,80 +319,3 @@ public class GameManager : MonoBehaviour
         }
     }
 }
-    /*
-    [Header("Menu")]
-    [SerializeField] Animator introAnimator;
-    [SerializeField] Animator outroAnimator;
-
-    [Header("Audio")]
-    [SerializeField] AudioSource IntroMusic;
-    [SerializeField] AudioSource backgroundMusic;
-    [SerializeField] AudioSource clickSound;
-    [SerializeField] AudioSource writingSound;
-
-    [Header("Cameras")]
-    [SerializeField] CinemachineVirtualCamera playerVC;
-    [SerializeField] CinemachineVirtualCamera nonPlayerVC;
-    [SerializeField] CinemachineBrain cinemachineBrain;
-    [SerializeField] Animator cinematicBars;
-
-    [Header("Animation")]
-    [SerializeField] Animator character_timur;
-    [SerializeField] Animator character_poet;
-    [SerializeField] Animator character_guard;
-
-    private DialogeData currentDialogue;
-
-    public int BalanceValue { get; private set; } = 0;
-
-
-    private DialogueNode currentNode;
-    private DialogueNodeUI currentDialogueNodeUI;
-    private GameObject prevDialogueNodeInstance;
-    private List<GameObject> playerDialogueInstances = new List<GameObject>();
-    */
-
-
-    /*
-    private IEnumerator Start() {
-        //yield return new WaitUntil(() => Input.anyKeyDown);
-        //FadeAudio(null, IntroMusic, 1);
-        //introAnimator.SetTrigger("Intro1");
-        //yield return new WaitForSeconds(1f);
-        //yield return new WaitUntil(() => Input.anyKeyDown);
-        //introAnimator.SetTrigger("Intro2");
-        //yield return new WaitForSeconds(1f);
-        //yield return new WaitUntil(() => Input.anyKeyDown);
-        //introAnimator.SetTrigger("IntroEnd");
-        //FadeAudio(IntroMusic, backgroundMusic, 1);
-        //yield return new WaitForSeconds(1f);
-        //StartDialogue(dialogueData_Intro);
-        yield break;
-    }
-
-    private void FadeAudio(AudioSource origin, AudioSource target, float duration)
-    {
-        StartCoroutine(FadeAudioRoutine(origin, target, duration));
-    }
-
-    private IEnumerator FadeAudioRoutine(AudioSource origin, AudioSource target, float duration)
-    {
-        float timeElapsed = 0;
-        float startVolumeOrigin = 1, targetVolumeTarget = 1;
-        if (origin) startVolumeOrigin = origin.volume;
-        if (target)
-        {
-            targetVolumeTarget = target.volume;
-            target.Play();
-        }
-        while (timeElapsed <= duration)
-        {
-            if(origin) origin.volume = Mathf.Lerp(startVolumeOrigin, 0, timeElapsed / duration);
-            if (target) target.volume = Mathf.Lerp(0, targetVolumeTarget, timeElapsed / duration);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-        if (origin) origin.Stop();
-    }
-}
-    */
