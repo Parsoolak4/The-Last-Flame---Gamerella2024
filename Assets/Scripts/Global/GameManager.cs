@@ -1,4 +1,5 @@
 
+using EasyTransition;
 using System.Collections;
 using UnityEngine;
 
@@ -8,8 +9,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject exitPrefab;
     [SerializeField] GameObject finalExitPrefab;
+    [SerializeField] GameObject transitionPrefab;
     [SerializeField] float cameraSpeed;
     [SerializeField] Vector3 spawnOffset;
+    [SerializeField] Vector3 cameraOffset;
     [SerializeField] GridData[] grids;
 
     private Vector3 TILE_RIGHT_UNIT = new Vector2(1.2f, 0.7f);
@@ -24,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
+    private Transition transition;
     private UnitManager unitManager;
     private Camera mainCamera;
     private GameObject gridParent;
@@ -44,6 +48,7 @@ public class GameManager : MonoBehaviour
         Application.runInBackground = true;
         Cursor.visible = true;
         mainCamera = GetComponentInChildren<Camera>();
+        transition = GetComponentInChildren<Transition>();
         unitManager = new();
     }
 
@@ -99,26 +104,37 @@ public class GameManager : MonoBehaviour
 
     private void OnExitReached() {
 
+        StartCoroutine(OnExitReachedRoutine());
+    }
+
+    private IEnumerator OnExitReachedRoutine() {
+
+        Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
+
+        yield return new WaitForSeconds(1f);
+
         unitManager.Clear();
 
         Unit[] units = FindObjectsOfType<Unit>();
-        foreach(Unit unit in units) {
+        foreach (Unit unit in units) {
             Destroy(unit.gameObject);
         }
         Destroy(gridParent);
         gridParent = null;
 
         currentGridIndex++;
-        if(currentGridIndex == grids.Length) {
+        if (currentGridIndex == grids.Length) {
             // TODO : game has ended
         } else {
             Generate(grids[currentGridIndex]);
         }
+
+        transition.OnGridLoaded();
     }
 
     private void Update() {
         UpdatePlayer();
-        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5), Time.deltaTime * cameraSpeed);
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5) + cameraOffset, Time.deltaTime * cameraSpeed);
     }
 
     private IEnumerator UpdateTurn() {

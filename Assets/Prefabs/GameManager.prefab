@@ -54,11 +54,15 @@ MonoBehaviour:
     type: 3}
   finalExitPrefab: {fileID: 2127597661098874845, guid: 098c23f722926074db526041fa3ae761,
     type: 3}
+  transitionPrefab: {fileID: 5276914992623515724, guid: 616d511151a6c554caddf1c754e4f91d,
+    type: 3}
   cameraSpeed: 2.5
   spawnOffset: {x: 0, y: 0, z: 0}
+  cameraOffset: {x: 0, y: 2.5, z: 0}
   grids:
   - {fileID: 11400000, guid: a25617fe40375c64bb4653dca574e604, type: 2}
   - {fileID: 11400000, guid: 115daf344feb0854884484d8b498b10c, type: 2}
+  - {fileID: 11400000, guid: 125a3054b99365e468b05dd1f90d5a5e, type: 2}
   - {fileID: 11400000, guid: 125a3054b99365e468b05dd1f90d5a5e, type: 2}
 --- !u!1 &6483317664734072052
 GameObject:
