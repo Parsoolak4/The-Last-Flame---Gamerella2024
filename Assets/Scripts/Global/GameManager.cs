@@ -1,13 +1,13 @@
 
 using EasyTransition;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] LayerMask playerLayerMask;
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] Sprite deadPlayerSprite;
     [SerializeField] GameObject exitPrefab;
     [SerializeField] GameObject finalExitPrefab;
     [SerializeField] GameObject transitionPrefab;
@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator EndGame(bool died) {
         if(died) {
+            player.GetComponent<SpriteRenderer>().sprite = deadPlayerSprite;
             Debug.Log("player is dead");
         } else {
             Debug.Log("Game has won");
