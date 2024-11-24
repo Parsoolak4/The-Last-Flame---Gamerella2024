@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bbdf83b5fd85434daa593b7542141c5, type: 3}
-  m_Name: Unit_Div
+  m_Name: Unit_Boulder 8
   m_EditorClassIdentifier: 
   prefab: {fileID: 2127597661098874845, guid: df263cf0218196549b4bdb36208a1d6e, type: 3}
   movements:

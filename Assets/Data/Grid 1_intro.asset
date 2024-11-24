@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76368a04018fbc749ad59b4238d45b21, type: 3}
-  m_Name: Grid 2
+  m_Name: Grid 1_intro
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2451464265658084868, guid: 8d9bdc0c4a4eab543a204e113587b3b9,
     type: 3}
   width: 6
-  height: 4
+  height: 3
   playerSpawn: {x: 0, y: 0}
-  exitSpawn: {x: 5, y: 3}
+  exitSpawn: {x: 5, y: 1}
   units:
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
-  - {fileID: 11400000, guid: 6263e9567f7df4441a71de22cef7d41b, type: 2}
+  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
+  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
+  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
+  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
