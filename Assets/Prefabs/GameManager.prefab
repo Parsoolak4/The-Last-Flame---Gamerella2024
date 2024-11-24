@@ -56,6 +56,7 @@ MonoBehaviour:
     type: 3}
   transitionPrefab: {fileID: 5276914992623515724, guid: 616d511151a6c554caddf1c754e4f91d,
     type: 3}
+  unitMoveDuration: 0.25
   cameraSpeed: 2.5
   spawnOffset: {x: 0, y: 0, z: 0}
   cameraOffset: {x: 0, y: 2.5, z: 0}
