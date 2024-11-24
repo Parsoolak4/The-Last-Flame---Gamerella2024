@@ -19,5 +19,5 @@ MonoBehaviour:
   playerSpawn: {x: 0, y: 0}
   exitSpawn: {x: 3, y: 3}
   units:
-  - {fileID: 11400000, guid: f6d0e6a89ae37e345b8b4eb405c25091, type: 2}
+  - {fileID: 11400000, guid: d0f4812a71efabc46b6c75c1d25fd077, type: 2}
   - {fileID: 11400000, guid: f22d679e58937b642a124fd4b896baba, type: 2}
