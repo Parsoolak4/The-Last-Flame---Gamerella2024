@@ -41,6 +41,7 @@ public class UnitManager
             var element = Object.Instantiate(unitData.Prefab,
                 GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
                 Quaternion.identity).AddComponent<Unit>();
+            element.Index = startPoint;
             GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = element;
             element.Initialize(unitData.Movements);  // Use unitData instead of unitDatas[0]
 
@@ -80,6 +81,7 @@ public class UnitManager
         int randomIndex = UnityEngine.Random.Range(0, validPaths.Count);
         UnitTypes.Path selectedPath = validPaths[randomIndex];
 
+        //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
         ExecutePath(unit, selectedPath);
         
@@ -156,8 +158,12 @@ public class UnitManager
         foreach (UnitTypes.Direction dir in path.directions)
         {
             Vector2Int currPoint = unit.Index;
-            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
 
+            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
+            Debug.Log("unit is moving from ");
+            
+            Debug.Log(currPoint.x);
+            Debug.Log(currPoint.y);
             switch (dir)
             {
                 case UnitTypes.Direction.N:
