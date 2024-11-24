@@ -72,9 +72,11 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(bool died) {
         if(died) {
+            AudioManager.PlayPlayerDied();
             player.GetComponent<SpriteRenderer>().sprite = deadPlayerSprite;
             Debug.Log("player is dead");
         } else {
+            AudioManager.PlayPlayerWon();
             Debug.Log("Game has won");
         }
         gameEnd = true;
@@ -135,7 +137,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator OnExitReachedRoutine() {
 
         if (currentGridIndex == grids.Length) {
-            AudioManager.PlayPlayerWon();
+            //AudioManager.PlayPlayerWon();
         } else {
             AudioManager.PlayLadder();
         }
