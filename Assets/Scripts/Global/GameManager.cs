@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     private GameObject gridParent;
     private Unit player;
     private Unit exit;
+    private int currentGridIndex;
     
     private enum Turn { Player, NPC }
     private Turn turn;
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void StartGame() {
-        Generate(grids[0]);
+        Generate(grids[currentGridIndex]);
     }
 
     private void Generate(GridData gridData) {
@@ -78,17 +79,41 @@ public class GameManager : MonoBehaviour
 
         // Spawn Exit
         Tile exitTile = Grid[gridData.ExitSpawn.x, gridData.ExitSpawn.y];
-        exit = Instantiate(exitPrefab, exitTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
+        if (currentGridIndex == grids.Length - 1) {
+            // This is the last level
+            exit = Instantiate(finalExitPrefab, exitTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
+        } else {
+            exit = Instantiate(exitPrefab, exitTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
+        }
         exit.Index = exitTile.Index;
         exitTile.Unit = exit;
 
         // TODO : do final exit if this is the last grid instead of exit ladder
 
         // Spawn all Units
-        unitManager.Generate(gridData.Units,spawnOffset);
+        unitManager.Generate(gridData, gridData.Units, spawnOffset);
 
         ShowAvailablePlayerMoves();
         StartCoroutine(UpdateTurn());
+    }
+
+    private void OnExitReached() {
+
+        unitManager.Clear();
+
+        Unit[] units = FindObjectsOfType<Unit>();
+        foreach(Unit unit in units) {
+            Destroy(unit.gameObject);
+        }
+        Destroy(gridParent);
+        gridParent = null;
+
+        currentGridIndex++;
+        if(currentGridIndex == grids.Length) {
+            // TODO : game has ended
+        } else {
+            Generate(grids[currentGridIndex]);
+        }
     }
 
     private void Update() {
@@ -201,6 +226,9 @@ public class GameManager : MonoBehaviour
                                 player.Index = tile.Index;
                                 tile.Unit = player;
                                 playerTile.Unit = null;
+
+                                OnExitReached();
+
                             } else {
                                 // Is blocked by NPC
                             }

@@ -3,11 +3,15 @@ using UnityEngine;
 
 public class UnitManager
 {
+    private GridData gridData;
     private List<Unit> units = new();
     private Vector3 spawnOffset;
 
-    public void Generate(UnitData[] unitDatas, Vector3 spawnOffset)
+    public void Generate(GridData gridData, UnitData[] unitDatas, Vector3 spawnOffset)
     {
+        if (unitDatas == null || unitDatas.Length == 0) return;
+
+        this.gridData = gridData;
         this.spawnOffset = spawnOffset;
         // TODO : read unitDatas and spawn all each unit
         //GameObject unit = Instantiate(unitDatas[0].Prefab);
@@ -19,6 +23,10 @@ public class UnitManager
 
         units.Add(unit);
 
+    }
+
+    public void Clear() {
+        units.Clear();
     }
 
     public void Update() {
@@ -102,8 +110,8 @@ public class UnitManager
             }
 
             // Check grid bounds
-            if (nextPosition.x < 0 || nextPosition.x >= 4 ||
-                nextPosition.y < 0 || nextPosition.y >= 8)
+            if (nextPosition.x < 0 || nextPosition.x >= gridData.Width ||
+                nextPosition.y < 0 || nextPosition.y >= gridData.Height)
             {
                 return false;
             }
