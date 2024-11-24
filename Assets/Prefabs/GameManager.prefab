@@ -50,6 +50,10 @@ MonoBehaviour:
     m_Bits: 1
   playerPrefab: {fileID: 2127597661098874845, guid: 3837f77f414c904459f5d088e21940bc,
     type: 3}
+  exitPrefab: {fileID: 2127597661098874845, guid: a4f1f4f0fef413241a79220a50a0f0c7,
+    type: 3}
+  finalExitPrefab: {fileID: 2127597661098874845, guid: 098c23f722926074db526041fa3ae761,
+    type: 3}
   cameraSpeed: 2.5
   spawnOffset: {x: 0, y: 0, z: 0}
   grids:

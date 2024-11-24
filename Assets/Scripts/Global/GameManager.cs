@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] LayerMask playerLayerMask;
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject exitPrefab;
+    [SerializeField] GameObject finalExitPrefab;
     [SerializeField] float cameraSpeed;
     [SerializeField] Vector3 spawnOffset;
     [SerializeField] GridData[] grids;
@@ -25,8 +27,8 @@ public class GameManager : MonoBehaviour
     private UnitManager unitManager;
     private Camera mainCamera;
     private GameObject gridParent;
-    private GameObject player;
-    private Tile playerTile;
+    private Unit player;
+    private Unit exit;
     
     private enum Turn { Player, NPC }
     private Turn turn;
@@ -69,11 +71,23 @@ public class GameManager : MonoBehaviour
         }
 
         // Spawn Player
-        player = Instantiate(playerPrefab, Grid[0, 0].gameObject.transform.position + spawnOffset, Quaternion.identity);
-        playerTile = Grid[0, 0];
+        Tile playerTile = Grid[gridData.PlayerSpawn.x, gridData.PlayerSpawn.y];
+        player = Instantiate(playerPrefab, playerTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
+        player.Index = playerTile.Index;
+        playerTile.Unit = player;
+
+        // Spawn Exit
+        Tile exitTile = Grid[gridData.ExitSpawn.x, gridData.ExitSpawn.y];
+        exit = Instantiate(exitPrefab, exitTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
+        exit.Index = exitTile.Index;
+        exitTile.Unit = exit;
+
+        // TODO : do final exit if this is the last grid instead of exit ladder
 
         // Spawn all Units
         unitManager.Generate(gridData.Units,spawnOffset);
+
+        ShowAvailablePlayerMoves();
         StartCoroutine(UpdateTurn());
     }
 
@@ -84,9 +98,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator UpdateTurn() {
 
+        // NPC turn
         yield return new WaitUntil(() => turn == Turn.NPC);
         turn = Turn.Player;
         unitManager.Update();
+
+        // Player turn
         ShowAvailablePlayerMoves();
         StartCoroutine(UpdateTurn());
         yield break;
@@ -100,34 +117,50 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Tile tile = playerTile;
+        Tile tile = Grid[player.Index.x, player.Index.y];
 
         if (tile.Index.x + 1 < Grid.GetLength(0)) {
-            if (Grid[(int)tile.Index.x + 1, (int)tile.Index.y].Unit) {
-                Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.red);
+            if (Grid[tile.Index.x + 1, tile.Index.y].Unit) {
+                if(Grid[tile.Index.x + 1, tile.Index.y].Unit == exit) {
+                    Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.green);
+                } else {
+                    Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.red);
+                }
             } else {
-                Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.green);
+                Grid[tile.Index.x + 1, tile.Index.y].SetColor(Color.green);
             }
         }
         if (tile.Index.x - 1 >= 0) {
-            if (Grid[(int)tile.Index.x - 1, (int)tile.Index.y].Unit) {
-                Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.red);
+            if (Grid[tile.Index.x - 1, tile.Index.y].Unit) {
+                if (Grid[tile.Index.x - 1, tile.Index.y].Unit == exit) {
+                    Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.green);
+                } else {
+                    Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.red);
+                }
             } else {
-                Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.green);
+                Grid[tile.Index.x - 1, tile.Index.y].SetColor(Color.green);
             }
         }
         if (tile.Index.y + 1 < Grid.GetLength(1)) {
-            if (Grid[(int)tile.Index.x, (int)tile.Index.y + 1].Unit) {
-                Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.red);
+            if (Grid[tile.Index.x, tile.Index.y + 1].Unit) {
+                if (Grid[tile.Index.x, tile.Index.y + 1].Unit == exit) {
+                    Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.green);
+                } else {
+                    Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.red);
+                }
             } else {
-                Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.green);
+                Grid[tile.Index.x, tile.Index.y + 1].SetColor(Color.green);
             }
         }
         if (tile.Index.y - 1 >= 0) {
-            if (Grid[(int)tile.Index.x, (int)tile.Index.y - 1].Unit) {
-                Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.red);
+            if (Grid[tile.Index.x, tile.Index.y - 1].Unit) {
+                if (Grid[tile.Index.x, tile.Index.y - 1].Unit == exit) {
+                    Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.green);
+                } else {
+                    Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.red);
+                }
             } else {
-                Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.green);
+                Grid[tile.Index.x, tile.Index.y - 1].SetColor(Color.green);
             }
         }
     }
@@ -146,6 +179,8 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0)) {
 
+                Tile playerTile = Grid[player.Index.x, player.Index.y];
+
                 if ((tile.Index.x == playerTile.Index.x + 1 && tile.Index.y == playerTile.Index.y) ||
                     (tile.Index.x == playerTile.Index.x - 1 && tile.Index.y == playerTile.Index.y) ||
                     (tile.Index.x == playerTile.Index.x && tile.Index.y == playerTile.Index.y + 1) ||
@@ -156,10 +191,19 @@ public class GameManager : MonoBehaviour
                         // Move the Player
                         if (tile.Unit == null) {
                             player.transform.position = hit.collider.transform.position + spawnOffset;
-                            playerTile = tile;
+                            player.Index = tile.Index;
+                            tile.Unit = player;
+                            playerTile.Unit = null;
                             turn = Turn.NPC;
                         } else {
-                            // Is occupied
+                            if(tile.Unit == exit) {
+                                player.transform.position = hit.collider.transform.position + spawnOffset;
+                                player.Index = tile.Index;
+                                tile.Unit = player;
+                                playerTile.Unit = null;
+                            } else {
+                                // Is blocked by NPC
+                            }
                         }
                     } else {
                         // out of grid

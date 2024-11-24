@@ -16,6 +16,8 @@ MonoBehaviour:
     type: 3}
   width: 4
   height: 8
+  playerSpawn: {x: 0, y: 0}
+  exitSpawn: {x: 3, y: 7}
   units:
   - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
   - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
