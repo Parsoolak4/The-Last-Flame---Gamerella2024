@@ -103,7 +103,11 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnExitReached() {
-
+        for (int i = 0; i < Grid.GetLength(0); i++) {
+            for (int j = 0; j < Grid.GetLength(1); j++) {
+                Grid[i, j].SetColor(Color.white);
+            }
+        }
         StartCoroutine(OnExitReachedRoutine());
     }
 
@@ -134,7 +138,9 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         UpdatePlayer();
-        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5) + cameraOffset, Time.deltaTime * cameraSpeed);
+        if (player != null) {
+            mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5) + cameraOffset, Time.deltaTime * cameraSpeed);
+        }
     }
 
     private IEnumerator UpdateTurn() {
