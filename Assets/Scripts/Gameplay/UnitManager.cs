@@ -126,9 +126,11 @@ public class UnitManager
     {
 
         List<Vector2Int> selectedPathTiles = new List<Vector2Int>();
+
+        Vector2Int currPoint = unit.Index;
+
         foreach (UnitTypes.Direction dir in path.directions)
         {
-            Vector2Int currPoint = unit.Index;
             switch (dir)
             {
                 case UnitTypes.Direction.N:
@@ -166,8 +168,6 @@ public class UnitManager
         }
         return selectedPathTiles;
     }
-
-
 
     private bool IsPathValid(Unit unit, UnitTypes.Path path)
     {
