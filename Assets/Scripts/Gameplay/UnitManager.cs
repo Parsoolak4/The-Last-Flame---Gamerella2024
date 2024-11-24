@@ -85,6 +85,10 @@ public class UnitManager
             GameManager.AudioManager.PlayUnitMove();
             yield return MoveUnitToTile(unit, GameManager.Instance.Grid[tile.x, tile.y], GameManager.Instance.UnitMoveDuration);
 
+            if (GameManager.Instance.Grid[tile.x, tile.y].Unit == GameManager.Instance.Player) {
+                GameManager.Instance.EndGame(true);
+            }
+
             GameManager.Instance.Grid[unit.Index.x, unit.Index.y].Unit = null;
             unit.Index = new(tile.x, tile.y);
             GameManager.Instance.Grid[tile.x, tile.y].Unit = unit;
@@ -104,10 +108,6 @@ public class UnitManager
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile, float unitMoveDuration) {
         float time = 0;
         Vector3 startPos = unit.transform.position;
-
-        if (tile.Unit == GameManager.Instance.Player) {
-            GameManager.Instance.EndGame(true);
-        }
 
         while (time <= unitMoveDuration) {
             unit.transform.position = Vector3.Lerp(startPos, tile.transform.position + spawnOffset, time / unitMoveDuration);
