@@ -7,7 +7,7 @@ public class UnitData : ScriptableObject
     [SerializeField] GameObject prefab;
     [SerializeField] UnitTypes.Movement movements;
     [SerializeField] Vector2Int[] startPoints;
-
+    
     public GameObject Prefab => prefab;
     public UnitTypes.Movement Movements => movements;
     public Vector2Int[] Startpoints => startPoints;

@@ -41,6 +41,7 @@ public class UnitManager
             var element = Object.Instantiate(unitData.Prefab,
                 GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
                 Quaternion.identity).AddComponent<Unit>();
+            element.Index = startPoint;
             GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = element;
             element.Initialize(unitData.Movements);  // Use unitData instead of unitDatas[0]
 
@@ -80,12 +81,58 @@ public class UnitManager
         int randomIndex = UnityEngine.Random.Range(0, validPaths.Count);
         UnitTypes.Path selectedPath = validPaths[randomIndex];
 
+        //GameManager.Instance.Grid[unit.Index.x, unit.Index.y] = null;
         // Execute the selected path
-        ExecutePath(unit, selectedPath);
+        // ExecutePath(unit, selectedPath);
         
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
         
+    }
+
+    private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path)
+    {
+
+        List<Vector2Int> selectedPathTiles = new List<Vector2Int>();
+        foreach (UnitTypes.Direction dir in path.directions)
+        {
+            Vector2Int currPoint = unit.Index;
+            switch (dir)
+            {
+                case UnitTypes.Direction.N:
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.S:
+                    currPoint.y -= 1;
+                    break;
+                case UnitTypes.Direction.E:
+                    currPoint.x += 1;
+                    break;
+                case UnitTypes.Direction.W:
+                    currPoint.x -= 1;
+                    break;
+                case UnitTypes.Direction.NE:
+                    currPoint.x += 1;
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.NW:
+                    currPoint.x -= 1;
+                    currPoint.y += 1;
+                    break;
+                case UnitTypes.Direction.SE:
+                    currPoint.x += 1;
+                    currPoint.y -= 1;
+                    break;
+                case UnitTypes.Direction.SW:
+                    currPoint.x -= 1;
+                    currPoint.y -= 1;
+                    break;
+            }
+
+            selectedPathTiles.Add(currPoint);
+
+        }
+        return selectedPathTiles;
     }
 
 
@@ -156,8 +203,12 @@ public class UnitManager
         foreach (UnitTypes.Direction dir in path.directions)
         {
             Vector2Int currPoint = unit.Index;
-            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
 
+            GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
+            Debug.Log("unit is moving from ");
+            
+            Debug.Log(currPoint.x);
+            Debug.Log(currPoint.y);
             switch (dir)
             {
                 case UnitTypes.Direction.N:

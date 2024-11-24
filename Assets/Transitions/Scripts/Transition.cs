@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 namespace EasyTransition
 {
-
     public class Transition : MonoBehaviour
     {
         public TransitionSettings transitionSettings;
@@ -96,10 +95,10 @@ namespace EasyTransition
             }
 
             //Adding the funcion OnSceneLoad() to the sceneLoaded action
-            SceneManager.sceneLoaded += OnSceneLoad;
+            //SceneManager.sceneLoaded += OnSceneLoad;
         }
 
-        public void OnSceneLoad(Scene scene, LoadSceneMode mode)
+        public void OnGridLoaded()
         {
             //Checking if this transition instance has allready played
             if (hasTransitionTriggeredOnce) return;
