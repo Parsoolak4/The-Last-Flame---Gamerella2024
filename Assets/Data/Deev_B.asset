@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bbdf83b5fd85434daa593b7542141c5, type: 3}
-  m_Name: Unit_Boulder 5
+  m_Name: Deev_B
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2127597661098874845, guid: df263cf0218196549b4bdb36208a1d6e, type: 3}
+  prefab: {fileID: 2127597661098874845, guid: 52d80a7d36c3b644595dc338ef3604fa, type: 3}
   movements:
     paths: []
   startPoints:
   - {x: 1, y: 1}
-  - {x: 2, y: 2}
+  - {x: 1, y: 0}
+  - {x: 3, y: 3}
+  - {x: 3, y: 2}

@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 2127597661098874845, guid: df263cf0218196549b4bdb36208a1d6e, type: 3}
   movements:
-    paths:
-    - directions: 0000000000000000
-    - directions: 0100000001000000
+    paths: []
   startPoints:
   - {x: 1, y: 1}
   - {x: 2, y: 2}
