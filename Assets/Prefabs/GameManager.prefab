@@ -58,6 +58,8 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 0, z: 0}
   grids:
   - {fileID: 11400000, guid: a25617fe40375c64bb4653dca574e604, type: 2}
+  - {fileID: 11400000, guid: 115daf344feb0854884484d8b498b10c, type: 2}
+  - {fileID: 11400000, guid: 125a3054b99365e468b05dd1f90d5a5e, type: 2}
 --- !u!1 &6483317664734072052
 GameObject:
   m_ObjectHideFlags: 0

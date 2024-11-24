@@ -3,22 +3,53 @@ using UnityEngine;
 
 public class UnitManager
 {
+    private GridData gridData;
     private List<Unit> units = new();
     private Vector3 spawnOffset;
 
-    public void Generate(UnitData[] unitDatas, Vector3 spawnOffset)
+    public void Generate(GridData gridData, UnitData[] unitDatas, Vector3 spawnOffset)
     {
+        if (unitDatas == null || unitDatas.Length == 0) return;
+
+        this.gridData = gridData;
         this.spawnOffset = spawnOffset;
+
         // TODO : read unitDatas and spawn all each unit
         //GameObject unit = Instantiate(unitDatas[0].Prefab);
         //unitDatas[0].startPoints();
-        Vector2Int startPoint = unitDatas[0].Startpoints[0];
-        var unit = Object.Instantiate(unitDatas[0].Prefab, GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset, Quaternion.identity).AddComponent<Unit>();
-        GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = unit;
-        unit.Initialize(unitDatas[0].Movements);
+        //Vector2Int startPoint = unitDatas[0].Startpoints[0];
+        //var unit = Object.Instantiate(unitDatas[0].Prefab, GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset, Quaternion.identity).AddComponent<Unit>();
+        //GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = unit;
+        //unit.Initialize(unitDatas[0].Movements);
 
-        units.Add(unit);
+        foreach (UnitData unitData in unitDatas) {
+            // list of valid tiles
+            List<Vector2Int> validStartPoints = new List<Vector2Int>();
+            foreach (Vector2Int stPoint in unitData.Startpoints) {
+                if (GameManager.Instance.Grid[stPoint.x, stPoint.y].Unit == null) {
+                    validStartPoints.Add(stPoint);
+                }
+            }
 
+            if (validStartPoints.Count == 0) {
+                Debug.Log("No valid paths available");
+                continue;
+            }
+
+            int r = Random.Range(0, validStartPoints.Count);
+            Vector2Int startPoint = validStartPoints[r];
+            var element = Object.Instantiate(unitData.Prefab,
+                GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset,
+                Quaternion.identity).AddComponent<Unit>();
+            GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = element;
+            element.Initialize(unitData.Movements);  // Use unitData instead of unitDatas[0]
+
+            units.Add(element);
+        }
+    }
+
+    public void Clear() {
+        units.Clear();
     }
 
     public void Update() {
@@ -102,8 +133,8 @@ public class UnitManager
             }
 
             // Check grid bounds
-            if (nextPosition.x < 0 || nextPosition.x >= 4 ||
-                nextPosition.y < 0 || nextPosition.y >= 8)
+            if (nextPosition.x < 0 || nextPosition.x >= gridData.Width ||
+                nextPosition.y < 0 || nextPosition.y >= gridData.Height)
             {
                 return false;
             }
