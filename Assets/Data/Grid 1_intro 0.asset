@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2451464265658084868, guid: 8d9bdc0c4a4eab543a204e113587b3b9,
     type: 3}
-  width: 3
-  height: 3
+  width: 2
+  height: 2
   playerSpawn: {x: 0, y: 0}
-  exitSpawn: {x: 2, y: 2}
+  exitSpawn: {x: 1, y: 1}
   units: []
