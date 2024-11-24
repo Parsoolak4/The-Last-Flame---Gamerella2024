@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     private GameObject gridParent;
     private GameObject player;
     private Tile playerTile;
+    
+    private enum Turn { Player, NPC }
+    private Turn turn;
 
     private void Awake() {
         if (_instance == null) {
@@ -69,20 +72,69 @@ public class GameManager : MonoBehaviour
         player = Instantiate(playerPrefab, Grid[0, 0].gameObject.transform.position + spawnOffset, Quaternion.identity);
         playerTile = Grid[0, 0];
 
-        // TODO : place all characaters and obstacles
+        // Spawn all Units
         unitManager.Generate(gridData.Units,spawnOffset);
+        StartCoroutine(UpdateTurn());
     }
 
     private void Update() {
         UpdatePlayer();
-
-        // Update Camera
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5), Time.deltaTime * cameraSpeed);
-        unitManager.Move();
+    }
+
+    private IEnumerator UpdateTurn() {
+
+        yield return new WaitUntil(() => turn == Turn.NPC);
+        turn = Turn.Player;
+        unitManager.Update();
+        ShowAvailablePlayerMoves();
+        StartCoroutine(UpdateTurn());
+        yield break;
+    }
+
+    private void ShowAvailablePlayerMoves() {
+
+        for (int i = 0; i < Grid.GetLength(0); i++) {
+            for (int j = 0; j < Grid.GetLength(1); j++) {
+                Grid[i, j].SetColor(Color.white);
+            }
+        }
+
+        Tile tile = playerTile;
+
+        if (tile.Index.x + 1 < Grid.GetLength(0)) {
+            if (Grid[(int)tile.Index.x + 1, (int)tile.Index.y].Unit) {
+                Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.red);
+            } else {
+                Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.green);
+            }
+        }
+        if (tile.Index.x - 1 >= 0) {
+            if (Grid[(int)tile.Index.x - 1, (int)tile.Index.y].Unit) {
+                Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.red);
+            } else {
+                Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.green);
+            }
+        }
+        if (tile.Index.y + 1 < Grid.GetLength(1)) {
+            if (Grid[(int)tile.Index.x, (int)tile.Index.y + 1].Unit) {
+                Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.red);
+            } else {
+                Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.green);
+            }
+        }
+        if (tile.Index.y - 1 >= 0) {
+            if (Grid[(int)tile.Index.x, (int)tile.Index.y - 1].Unit) {
+                Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.red);
+            } else {
+                Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.green);
+            }
+        }
     }
 
     private void UpdatePlayer() {
 
+        if (turn == Turn.NPC) return;
 
         RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector3.forward, 20, playerLayerMask);
 
@@ -91,37 +143,6 @@ public class GameManager : MonoBehaviour
             Tile tile = hit.collider.GetComponent<Tile>();
 
             // TODO : highlight player moves at start of player turn
-
-            /*
-            if (tile.Index.x + 1 < Grid.GetLength(0)) {
-            //if (Grid[(int)tile.Index.x + 1, (int)tile.Index.y].Unit) {
-            //    Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.green);
-            //} else {
-            //    Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.red);
-            //}
-            }
-            if (tile.Index.x - 1 >= 0) {
-                //if (Grid[(int)tile.Index.x - 1, (int)tile.Index.y].Unit) {
-                //    Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.green);
-                //} else {
-                //    Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.red);
-                //}
-            }
-            if (tile.Index.y + 1 < Grid.GetLength(1)) {
-                //if (Grid[(int)tile.Index.x, (int)tile.Index.y + 1].Unit) {
-                //    Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.green);
-                //} else {
-                //    Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.red);
-                //}
-            }
-            if (tile.Index.y - 1 >= 0) {
-                //if (Grid[(int)tile.Index.y, (int)tile.Index.y - 1].Unit) {
-                //    Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.green);
-                //} else {
-                //    Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.red);
-                //}
-            }
-            */
 
             if (Input.GetMouseButtonDown(0)) {
 
@@ -136,6 +157,7 @@ public class GameManager : MonoBehaviour
                         if (tile.Unit == null) {
                             player.transform.position = hit.collider.transform.position + spawnOffset;
                             playerTile = tile;
+                            turn = Turn.NPC;
                         } else {
                             // Is occupied
                         }

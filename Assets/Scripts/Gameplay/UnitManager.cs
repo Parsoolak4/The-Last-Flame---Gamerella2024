@@ -1,37 +1,39 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.U2D;
 
 public class UnitManager
 {
     private List<Unit> units = new();
+    private Vector3 spawnOffset;
 
     public void Generate(UnitData[] unitDatas, Vector3 spawnOffset)
     {
-        //, Vector3 spawnOffset
+        this.spawnOffset = spawnOffset;
         // TODO : read unitDatas and spawn all each unit
         //GameObject unit = Instantiate(unitDatas[0].Prefab);
         //unitDatas[0].startPoints();
         Vector2Int startPoint = unitDatas[0].Startpoints[0];
-        var unit = Object.Instantiate(unitDatas[0].Prefab, GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position, Quaternion.identity).AddComponent<Unit>();
+        var unit = Object.Instantiate(unitDatas[0].Prefab, GameManager.Instance.Grid[startPoint.x, startPoint.y].gameObject.transform.position + spawnOffset, Quaternion.identity).AddComponent<Unit>();
+        GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = unit;
         unit.Initialize(unitDatas[0].Movements);
 
         units.Add(unit);
 
     }
 
-    public void Move()
+    public void Update() {
+        foreach (var unit in units) {
+            Move(unit);
+        }
+    }
+
+    private void Move(Unit unit)
     {
-        Unit saman = units[0];
         List<UnitTypes.Path> validPaths = new List<UnitTypes.Path>();
 
-        foreach (UnitTypes.Path path in saman.Movements.paths)
+        foreach (UnitTypes.Path path in unit.Movements.paths)
         {
-            if (IsPathValid(saman, path))
+            if (IsPathValid(unit, path))
             {
                 validPaths.Add(path);
             }
@@ -48,7 +50,7 @@ public class UnitManager
         UnitTypes.Path selectedPath = validPaths[randomIndex];
 
         // Execute the selected path
-        ExecutePath(saman, selectedPath);
+        ExecutePath(unit, selectedPath);
         
         //GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = saman;
         //saman.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
@@ -159,7 +161,7 @@ public class UnitManager
 
             unit.Index = currPoint;
             GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = unit;
-            unit.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position;
+            unit.transform.position = GameManager.Instance.Grid[currPoint.x, currPoint.y].gameObject.transform.position + spawnOffset;
         }
     }
 }
