@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
         // TODO : marke Grid.Points[0, 0]. as taken by player
 
         // TODO : place all characaters and obstacles
-        unitManager.Generate(gridData.Units);
+        unitManager.Generate(gridData.Units,spawnOffset);
     }
 
     private void Update() {
