@@ -8,12 +8,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] float cameraSpeed;
     [SerializeField] Vector3 spawnOffset;
-    [SerializeField] GridData [] grids;
+    [SerializeField] GridData[] grids;
 
     private Vector3 TILE_RIGHT_UNIT = new Vector2(1.2f, 0.7f);
     private Vector3 TILE_UP_UNIT = new Vector2(-1.2f, 0.7f);
 
-    public Grid Grid { get; private set; }
+    public Tile[,] Grid { get; private set; }
 
     public static GameManager Instance {
         get { return _instance; }
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     private Camera mainCamera;
     private GameObject gridParent;
     private GameObject player;
+    private Tile playerTile;
 
     private void Awake() {
         if (_instance == null) {
@@ -55,34 +56,99 @@ public class GameManager : MonoBehaviour
         if (gridParent == null) {
             gridParent = new GameObject("GridParent");
         }
-        Grid = new(gridData);
-        for (int i = 0; i < Grid.Points.GetLength(0); i++) {
-            for (int j = 0; j < Grid.Points.GetLength(1); j++) {
-                Grid.Points[i,j].gameObject = Instantiate(gridData.TilePrefab, transform.position + i * TILE_RIGHT_UNIT + j * TILE_UP_UNIT, Quaternion.identity, gridParent.transform);
-                Grid.Points[i, j].gameObject.GetComponentInChildren<SpriteRenderer>().sortingOrder = Grid.Points.GetLength(0) - i + Grid.Points.GetLength(1) - j;
+        Grid = new Tile[gridData.Width, gridData.Height];
+        for (int i = 0; i < Grid.GetLength(0); i++) {
+            for (int j = 0; j < Grid.GetLength(1); j++) {
+                Grid[i, j] = Instantiate(gridData.TilePrefab, transform.position + i * TILE_RIGHT_UNIT + j * TILE_UP_UNIT, Quaternion.identity, gridParent.transform).GetComponent<Tile>();
+                Grid[i, j].Index = new(i, j);
+                Grid[i, j].gameObject.GetComponentInChildren<SpriteRenderer>().sortingOrder = Grid.GetLength(0) - i + Grid.GetLength(1) - j;
             }
         }
 
         // Spawn Player
-        player = Instantiate(playerPrefab, Grid.Points[0, 0].gameObject.transform.position + spawnOffset, Quaternion.identity);
-        // TODO : marke Grid.Points[0, 0]. as taken by player
+        player = Instantiate(playerPrefab, Grid[0, 0].gameObject.transform.position + spawnOffset, Quaternion.identity);
+        playerTile = Grid[0, 0];
 
         // TODO : place all characaters and obstacles
         unitManager.Generate(gridData.Units,spawnOffset);
     }
 
     private void Update() {
-        if(Input.GetMouseButtonDown(0)) {
-            RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector3.forward, 20, playerLayerMask);
-            if (hit) {
-                player.transform.position = hit.collider.transform.position + spawnOffset;
-            }
-        }
+        UpdatePlayer();
+
         // Update Camera
-        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3 (0,0,-5), Time.deltaTime * cameraSpeed);
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5), Time.deltaTime * cameraSpeed);
         unitManager.Move();
     }
 
+    private void UpdatePlayer() {
+
+
+        RaycastHit2D hit = Physics2D.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector3.forward, 20, playerLayerMask);
+
+        if (hit.collider) {
+
+            Tile tile = hit.collider.GetComponent<Tile>();
+
+            // TODO : highlight player moves at start of player turn
+
+            /*
+            if (tile.Index.x + 1 < Grid.GetLength(0)) {
+            //if (Grid[(int)tile.Index.x + 1, (int)tile.Index.y].Unit) {
+            //    Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.green);
+            //} else {
+            //    Grid[(int)tile.Index.x + 1, (int)tile.Index.y].SetColor(Color.red);
+            //}
+            }
+            if (tile.Index.x - 1 >= 0) {
+                //if (Grid[(int)tile.Index.x - 1, (int)tile.Index.y].Unit) {
+                //    Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.green);
+                //} else {
+                //    Grid[(int)tile.Index.x - 1, (int)tile.Index.y].SetColor(Color.red);
+                //}
+            }
+            if (tile.Index.y + 1 < Grid.GetLength(1)) {
+                //if (Grid[(int)tile.Index.x, (int)tile.Index.y + 1].Unit) {
+                //    Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.green);
+                //} else {
+                //    Grid[(int)tile.Index.x, (int)tile.Index.y + 1].SetColor(Color.red);
+                //}
+            }
+            if (tile.Index.y - 1 >= 0) {
+                //if (Grid[(int)tile.Index.y, (int)tile.Index.y - 1].Unit) {
+                //    Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.green);
+                //} else {
+                //    Grid[(int)tile.Index.x, (int)tile.Index.y - 1].SetColor(Color.red);
+                //}
+            }
+            */
+
+            if (Input.GetMouseButtonDown(0)) {
+
+                if ((tile.Index.x == playerTile.Index.x + 1 && tile.Index.y == playerTile.Index.y) ||
+                    (tile.Index.x == playerTile.Index.x - 1 && tile.Index.y == playerTile.Index.y) ||
+                    (tile.Index.x == playerTile.Index.x && tile.Index.y == playerTile.Index.y + 1) ||
+                    (tile.Index.x == playerTile.Index.x && tile.Index.y == playerTile.Index.y - 1)) {
+
+                    if (tile.Index.x >= 0 && tile.Index.x < Grid.GetLength(0) &&
+                        tile.Index.y >= 0 && tile.Index.y < Grid.GetLength(1)) {
+                        // Move the Player
+                        if (tile.Unit == null) {
+                            player.transform.position = hit.collider.transform.position + spawnOffset;
+                            playerTile = tile;
+                        } else {
+                            // Is occupied
+                        }
+                    } else {
+                        // out of grid
+                    }
+                } else {
+                    // Is occupied
+                }
+            }
+        }
+    }
+}
     /*
     [Header("Menu")]
     [SerializeField] Animator introAnimator;
@@ -158,14 +224,5 @@ public class GameManager : MonoBehaviour
         }
         if (origin) origin.Stop();
     }
-
-    private void Update() {
-        if (currentDialogue == null) return;
-        if(Input.anyKeyDown) {
-            if(playerDialogueInstances.Count <= 1 && !currentNode.IsPoetry) {
-                currentDialogueNodeUI.OnNodeSelected();
-            }
-        }
-    }
-    */
 }
+    */
