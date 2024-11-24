@@ -71,7 +71,7 @@ public class UnitManager
         }
 
         if (validPaths.Count == 0) {
-            Debug.Log("No valid paths available");
+            //Debug.Log("No valid paths available");
             yield break;
         }
 
