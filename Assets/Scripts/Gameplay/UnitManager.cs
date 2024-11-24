@@ -9,8 +9,7 @@ public class UnitManager
     private List<Unit> units = new();
     private Vector3 spawnOffset;
 
-    public void Generate(GridData gridData, UnitData[] unitDatas, Vector3 spawnOffset)
-    {
+    public void Generate(GridData gridData, UnitData[] unitDatas, Vector3 spawnOffset) {
         if (unitDatas == null || unitDatas.Length == 0) return;
 
         this.gridData = gridData;
@@ -62,20 +61,16 @@ public class UnitManager
         yield break;
     }
 
-    private IEnumerator Move(Unit unit, Action moveCallback)
-    {
+    private IEnumerator Move(Unit unit, Action moveCallback) {
         List<UnitTypes.Path> validPaths = new List<UnitTypes.Path>();
 
-        foreach (UnitTypes.Path path in unit.Movements.paths)
-        {
-            if (IsPathValid(unit, path))
-            {
+        foreach (UnitTypes.Path path in unit.Movements.paths) {
+            if (IsPathValid(unit, path)) {
                 validPaths.Add(path);
             }
         }
 
-        if (validPaths.Count == 0)
-        {
+        if (validPaths.Count == 0) {
             Debug.Log("No valid paths available");
             yield break;
         }
@@ -86,7 +81,7 @@ public class UnitManager
 
         List<Vector2Int> tiles = selectedPathTiles(unit, selectedPath);
 
-        foreach(var tile in tiles) {
+        foreach (var tile in tiles) {
             yield return MoveUnitToTile(unit, GameManager.Instance.Grid[tile.x, tile.y], GameManager.Instance.UnitMoveDuration);
 
             GameManager.Instance.Grid[unit.Index.x, unit.Index.y].Unit = null;
@@ -109,7 +104,7 @@ public class UnitManager
         float time = 0;
         Vector3 startPos = unit.transform.position;
 
-        if(tile.Unit == GameManager.Instance.Player) {
+        if (tile.Unit == GameManager.Instance.Player) {
             GameManager.Instance.StartCoroutine(GameManager.Instance.EndGame(true));
         }
 
@@ -122,17 +117,14 @@ public class UnitManager
         yield break;
     }
 
-    private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path)
-    {
+    private List<Vector2Int> selectedPathTiles(Unit unit, UnitTypes.Path path) {
 
         List<Vector2Int> selectedPathTiles = new List<Vector2Int>();
 
         Vector2Int currPoint = unit.Index;
 
-        foreach (UnitTypes.Direction dir in path.directions)
-        {
-            switch (dir)
-            {
+        foreach (UnitTypes.Direction dir in path.directions) {
+            switch (dir) {
                 case UnitTypes.Direction.N:
                     currPoint.y += 1;
                     break;
@@ -169,18 +161,15 @@ public class UnitManager
         return selectedPathTiles;
     }
 
-    private bool IsPathValid(Unit unit, UnitTypes.Path path)
-    {
+    private bool IsPathValid(Unit unit, UnitTypes.Path path) {
         Vector2Int finalPosition = unit.Index;
 
         // Simulate movement along the path
         //inefficient, make this better Mehrdad
-        foreach (UnitTypes.Direction dir in path.directions)
-        {
+        foreach (UnitTypes.Direction dir in path.directions) {
             Vector2Int nextPosition = finalPosition;
 
-            switch (dir)
-            {
+            switch (dir) {
                 case UnitTypes.Direction.N:
                     nextPosition.y += 1;
                     break;
@@ -213,14 +202,12 @@ public class UnitManager
 
             // Check grid bounds
             if (nextPosition.x < 0 || nextPosition.x >= gridData.Width ||
-                nextPosition.y < 0 || nextPosition.y >= gridData.Height)
-            {
+                nextPosition.y < 0 || nextPosition.y >= gridData.Height) {
                 return false;
             }
 
             // Check collision with other units
-            if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != null)
-            {
+            if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != null) {
                 if (GameManager.Instance.Grid[nextPosition.x, nextPosition.y].Unit != GameManager.Instance.Player) {
                     return false;
                 }
@@ -232,19 +219,16 @@ public class UnitManager
         return true;
     }
 
-    private void ExecutePath(Unit unit, UnitTypes.Path path)
-    {
-        foreach (UnitTypes.Direction dir in path.directions)
-        {
+    private void ExecutePath(Unit unit, UnitTypes.Path path) {
+        foreach (UnitTypes.Direction dir in path.directions) {
             Vector2Int currPoint = unit.Index;
 
             GameManager.Instance.Grid[currPoint.x, currPoint.y].Unit = null;
             Debug.Log("unit is moving from ");
-            
+
             Debug.Log(currPoint.x);
             Debug.Log(currPoint.y);
-            switch (dir)
-            {
+            switch (dir) {
                 case UnitTypes.Direction.N:
                     currPoint.y += 1;
                     break;
