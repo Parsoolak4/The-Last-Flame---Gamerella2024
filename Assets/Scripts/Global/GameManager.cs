@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
+    public AudioManager AudioManager { get; private set; }
+
     private Coroutine moveUnitRoutine;
     private UnitManager unitManager;
     private Camera mainCamera;
@@ -53,6 +55,7 @@ public class GameManager : MonoBehaviour
         Application.runInBackground = true;
         Cursor.visible = true;
         mainCamera = GetComponentInChildren<Camera>();
+        AudioManager = GetComponentInChildren<AudioManager>();
         unitManager = new();
     }
 
@@ -131,6 +134,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator OnExitReachedRoutine() {
 
+        if (currentGridIndex == grids.Length) {
+            // TODO : Fire on
+        } else {
+            AudioManager.PlayLadder();
+        }
+
         Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
 
         yield return new WaitForSeconds(1f);
@@ -169,6 +178,7 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile) {
+        AudioManager.PlayPlayerMove();
         float time = 0;
         Vector3 startPos = unit.transform.position;
         while (time <= unitMoveDuration) {
