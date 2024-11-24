@@ -19,3 +19,4 @@ MonoBehaviour:
     - directions: 0100000001000000
   startPoints:
   - {x: 1, y: 1}
+  - {x: 2, y: 2}
