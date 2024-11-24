@@ -77,6 +77,11 @@ public class GameManager : MonoBehaviour
         } else {
             Debug.Log("Game has won");
         }
+        for (int i = 0; i < Grid.GetLength(0); i++) {
+            for (int j = 0; j < Grid.GetLength(1); j++) {
+                Grid[i, j].SetColor(Color.white);
+            }
+        }
         gameEnd = true;
     }
 
@@ -173,11 +178,6 @@ public class GameManager : MonoBehaviour
         if(gameEnd) {
             if(Input.anyKeyDown) {
                 gameEnd = false;
-                for (int i = 0; i < Grid.GetLength(0); i++) {
-                    for (int j = 0; j < Grid.GetLength(1); j++) {
-                        Grid[i, j].SetColor(Color.white);
-                    }
-                }
                 StartCoroutine(DoGameEnd());
             }
             return;
