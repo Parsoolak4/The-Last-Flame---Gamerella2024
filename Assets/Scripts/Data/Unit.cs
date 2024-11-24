@@ -1,31 +1,17 @@
+using System;
 using UnityEngine;
 
 public class Unit : MonoBehaviour{
 
-    [SerializeField] Movement movements;
-    Vector2Int currPoint;
-    [Serializable]
-    public struct Movement
-    {
-        public Path[] paths;
-    }
+    [SerializeField] UnitTypes.Movement movements;
+    public Vector2Int Index { get; set; }
 
-    [Serializable]
-    public struct Path
-    {
-        public Direction[] directions;
-    }
+    public UnitTypes.Movement Movements => movements;
 
-    public enum Direction
+    public void Initialize(UnitTypes.Movement movementData)
     {
-        N, E, W, S, NE, NW, SE, SW
+        movements = movementData;
     }
-    public Movement Movements => movements;
-
-    private void Start()
-    {
-        
-    }
-
+    
 }
 

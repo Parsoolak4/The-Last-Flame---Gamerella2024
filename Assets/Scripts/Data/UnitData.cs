@@ -5,22 +5,21 @@ using UnityEngine;
 public class UnitData : ScriptableObject
 {
     [SerializeField] GameObject prefab;
-    [SerializeField] Movement movements;
-
+    [SerializeField] UnitTypes.Movement movements;
     [SerializeField] Vector2Int[] startPoints;
 
     public GameObject Prefab => prefab;
-    public Movement Movements => movements;
+    public UnitTypes.Movement Movements => movements;
     public Vector2Int[] Startpoints => startPoints;
     [Serializable]
     public struct Movement {
-        public Path [] types;
+        public Path [] paths;
     }
     [Serializable]
     public struct Path {
         public Direction[] directions;
     }
-
+    [SerializeField]
     public enum Direction
     {
         N, E, W, S, NE, NW, SE, SW

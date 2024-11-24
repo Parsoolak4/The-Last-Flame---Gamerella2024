@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private Vector3 TILE_UP_UNIT = new Vector2(-1.2f, 0.7f);
 
     public Tile[,] Grid { get; private set; }
-
+    
     public static GameManager Instance {
         get { return _instance; }
         private set { }
