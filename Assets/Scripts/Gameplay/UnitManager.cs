@@ -106,7 +106,7 @@ public class UnitManager
         Vector3 startPos = unit.transform.position;
 
         if (tile.Unit == GameManager.Instance.Player) {
-            GameManager.Instance.StartCoroutine(GameManager.Instance.EndGame(true));
+            GameManager.Instance.EndGame(true);
         }
 
         while (time <= unitMoveDuration) {

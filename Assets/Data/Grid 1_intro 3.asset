@@ -20,4 +20,4 @@ MonoBehaviour:
   exitSpawn: {x: 4, y: 1}
   units:
   - {fileID: 11400000, guid: de472a3f7337b9d42897b4c5b3fb64f4, type: 2}
-  - {fileID: 11400000, guid: c68f518a630648f48ba944ec1dcf5c59, type: 2}
+  - {fileID: 11400000, guid: 1b157293333355943813a898f99ff206, type: 2}

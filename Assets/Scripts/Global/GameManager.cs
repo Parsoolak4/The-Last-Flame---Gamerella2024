@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     private Unit player;
     private Unit exit;
     private int currentGridIndex;
+
+    private bool gameEnd;
     
     private enum Turn { Player, NPC }
     private Turn turn;
@@ -68,16 +70,14 @@ public class GameManager : MonoBehaviour
         Generate(grids[currentGridIndex]);
     }
 
-    public IEnumerator EndGame(bool died) {
+    public void EndGame(bool died) {
         if(died) {
             player.GetComponent<SpriteRenderer>().sprite = deadPlayerSprite;
             Debug.Log("player is dead");
         } else {
             Debug.Log("Game has won");
         }
-        currentGridIndex = 0;
-        StartGame();
-        yield break;
+        gameEnd = true;
     }
 
     private void Generate(GridData gridData) {
@@ -155,8 +155,7 @@ public class GameManager : MonoBehaviour
 
         currentGridIndex++;
         if (currentGridIndex == grids.Length) {
-            yield return EndGame(false);
-            transition.OnGridLoaded();
+            EndGame(false);
         } else {
             Generate(grids[currentGridIndex]);
             transition.OnGridLoaded();
@@ -171,10 +170,43 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update() {
+        if(gameEnd) {
+            if(Input.anyKeyDown) {
+                gameEnd = false;
+                for (int i = 0; i < Grid.GetLength(0); i++) {
+                    for (int j = 0; j < Grid.GetLength(1); j++) {
+                        Grid[i, j].SetColor(Color.white);
+                    }
+                }
+                StartCoroutine(DoGameEnd());
+            }
+            return;
+        }
         UpdatePlayer();
         if (player != null) {
             mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, player.transform.position + new Vector3(0, 0, -5) + cameraOffset, Time.deltaTime * cameraSpeed);
         }
+    }
+
+    private IEnumerator DoGameEnd() {
+
+        Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
+
+        yield return new WaitForSeconds(1f);
+
+        unitManager.Clear();
+
+        Unit[] units = FindObjectsOfType<Unit>();
+        foreach (Unit unit in units) {
+            Destroy(unit.gameObject);
+        }
+        Destroy(gridParent);
+        gridParent = null;
+
+        currentGridIndex = 0;
+        StartGame();
+
+        transition.OnGridLoaded();
     }
 
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile) {
@@ -274,7 +306,7 @@ public class GameManager : MonoBehaviour
         }
 
         if(hasAvailableMoves == false) {
-            StartCoroutine(EndGame(true));
+            EndGame(true);
         }
     }
 
