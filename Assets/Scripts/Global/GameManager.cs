@@ -1,5 +1,6 @@
 
 using EasyTransition;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
-    public AudioManager AudioManager { get; private set; }
+    public static AudioManager AudioManager { get; private set; }
 
     private Coroutine moveUnitRoutine;
     private UnitManager unitManager;
@@ -72,9 +73,11 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(bool died) {
         if(died) {
+            AudioManager.PlayPlayerDied();
             player.GetComponent<SpriteRenderer>().sprite = deadPlayerSprite;
             Debug.Log("player is dead");
         } else {
+            AudioManager.PlayPlayerWon();
             Debug.Log("Game has won");
         }
         for (int i = 0; i < Grid.GetLength(0); i++) {
@@ -140,7 +143,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator OnExitReachedRoutine() {
 
         if (currentGridIndex == grids.Length) {
-            // TODO : Fire on
+            //AudioManager.PlayPlayerWon();
         } else {
             AudioManager.PlayLadder();
         }
@@ -221,6 +224,15 @@ public class GameManager : MonoBehaviour
         unit.transform.position = tile.transform.position + spawnOffset;
         moveUnitRoutine = null;
         ReorderUnitSortingOrders();
+
+        if (tile.Unit == exit) {
+            OnExitReached();
+        } else {
+            turn = Turn.NPC;
+        }
+        Grid[player.Index.x, player.Index.y].Unit = null;
+        player.Index = tile.Index;
+        tile.Unit = player;
         yield break;
     }
 
@@ -238,6 +250,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => moveUnitRoutine == null);
 
         yield return unitManager.Update(ReorderUnitSortingOrders);
+
+        yield return new WaitForSeconds(0.1f);
 
         // Player turn
         turn = Turn.Player;
@@ -345,19 +359,10 @@ public class GameManager : MonoBehaviour
                         // Move the Player
                         if (tile.Unit == null) {
                             moveUnitRoutine = StartCoroutine(MoveUnitToTile(player, tile));
-                            player.Index = tile.Index;
-                            tile.Unit = player;
-                            playerTile.Unit = null;
-                            turn = Turn.NPC;
+                            
                         } else {
                             if(tile.Unit == exit) {
                                 moveUnitRoutine = StartCoroutine(MoveUnitToTile(player, tile));
-                                player.Index = tile.Index;
-                                tile.Unit = player;
-                                playerTile.Unit = null;
-
-                                OnExitReached();
-
                             } else {
                                 // Is blocked by NPC
                             }
