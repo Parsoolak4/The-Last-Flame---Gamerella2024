@@ -15,11 +15,9 @@ MonoBehaviour:
   tilePrefab: {fileID: 2451464265658084868, guid: 8d9bdc0c4a4eab543a204e113587b3b9,
     type: 3}
   width: 6
-  height: 3
+  height: 5
   playerSpawn: {x: 0, y: 0}
-  exitSpawn: {x: 5, y: 1}
+  exitSpawn: {x: 4, y: 1}
   units:
-  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
-  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
-  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
-  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
+  - {fileID: 11400000, guid: de472a3f7337b9d42897b4c5b3fb64f4, type: 2}
+  - {fileID: 11400000, guid: c68f518a630648f48ba944ec1dcf5c59, type: 2}
