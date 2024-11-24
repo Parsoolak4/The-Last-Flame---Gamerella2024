@@ -87,7 +87,7 @@ public class UnitManager
             GameManager.Instance.Grid[unit.Index.x, unit.Index.y].Unit = null;
             unit.Index = new(tile.x, tile.y);
             GameManager.Instance.Grid[tile.x, tile.y].Unit = unit;
-
+            GameManager.AudioManager.PlayUnitMove();
             moveCallback();
         }
 

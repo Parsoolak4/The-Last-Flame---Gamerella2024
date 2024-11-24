@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
-    public AudioManager AudioManager { get; private set; }
+    public static AudioManager AudioManager { get; private set; }
 
     private Coroutine moveUnitRoutine;
     private UnitManager unitManager;
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator OnExitReachedRoutine() {
 
         if (currentGridIndex == grids.Length) {
-            // TODO : Fire on
+            AudioManager.PlayPlayerWon();
         } else {
             AudioManager.PlayLadder();
         }
