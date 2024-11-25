@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GYM_Parsa.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/GYM_Mehrdad.unity
+    guid: 36a636eaa67d64c44be9e449ffd3c523
   m_configObjects: {}
