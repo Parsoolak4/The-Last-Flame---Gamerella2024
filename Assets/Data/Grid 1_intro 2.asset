@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2451464265658084868, guid: 8d9bdc0c4a4eab543a204e113587b3b9,
     type: 3}
-  width: 6
+  width: 4
   height: 5
   playerSpawn: {x: 0, y: 0}
-  exitSpawn: {x: 5, y: 4}
+  exitSpawn: {x: 3, y: 4}
   units:
   - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
   - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
   - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}
-  - {fileID: 11400000, guid: de472a3f7337b9d42897b4c5b3fb64f4, type: 2}
+  - {fileID: 11400000, guid: 5386a1643675fe249b407682725d9e37, type: 2}

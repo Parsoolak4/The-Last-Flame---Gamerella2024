@@ -19,9 +19,9 @@ MonoBehaviour:
     - directions: 01000000
     - directions: 02000000
     - directions: 03000000
-    - directions: 05000000
-    - directions: 06000000
-    - directions: 07000000
-    - directions: 04000000
+    - directions: 0500000005000000
+    - directions: 0600000006000000
+    - directions: 0700000007000000
+    - directions: 0400000004000000
   startPoints:
   - {x: 4, y: 4}

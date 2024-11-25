@@ -15,10 +15,10 @@ MonoBehaviour:
   prefab: {fileID: 2127597661098874845, guid: 51aa14cf356235447a0fdab56c692ac6, type: 3}
   movements:
     paths:
-    - directions: 07000000
-    - directions: 06000000
-    - directions: 05000000
-    - directions: 04000000
+    - directions: 000000000100000001000000
+    - directions: 000000000200000002000000
+    - directions: 030000000100000001000000
+    - directions: 030000000200000002000000
   startPoints:
   - {x: 2, y: 2}
   - {x: 4, y: 5}
