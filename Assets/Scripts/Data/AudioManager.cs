@@ -20,7 +20,9 @@ public class AudioManager : MonoBehaviour
 
     public void PlayUnitMove()
     {
-        unitMoveSound.Play();
+        if (!unitMoveSound.isPlaying) {
+            unitMoveSound.Play();
+        }
     }
 
     public void PlayPlayerDied()

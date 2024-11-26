@@ -1,6 +1,5 @@
 
 using EasyTransition;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -43,7 +42,8 @@ public class GameManager : MonoBehaviour
     private Unit exit;
     private int currentGridIndex;
 
-    private bool gameEnd;
+    private bool playerIsDead;
+    private bool gameIsOver;
     
     private enum Turn { Player, NPC }
     private Turn turn;
@@ -80,12 +80,13 @@ public class GameManager : MonoBehaviour
             AudioManager.PlayPlayerWon();
             Debug.Log("Game has won");
         }
+        playerIsDead = died;
+        gameIsOver = true;
         for (int i = 0; i < Grid.GetLength(0); i++) {
             for (int j = 0; j < Grid.GetLength(1); j++) {
                 Grid[i, j].SetColor(Color.white);
             }
         }
-        gameEnd = true;
     }
 
     private void Generate(GridData gridData) {
@@ -104,6 +105,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Spawn Player
+        playerIsDead = false;
         Tile playerTile = Grid[gridData.PlayerSpawn.x, gridData.PlayerSpawn.y];
         player = Instantiate(playerPrefab, playerTile.transform.position + spawnOffset, Quaternion.identity).GetComponent<Unit>();
         player.Index = playerTile.Index;
@@ -119,8 +121,6 @@ public class GameManager : MonoBehaviour
         }
         exit.Index = exitTile.Index;
         exitTile.Unit = exit;
-
-        // TODO : do final exit if this is the last grid instead of exit ladder
 
         // Spawn all Units
         unitManager.Generate(gridData, gridData.Units, spawnOffset);
@@ -144,15 +144,17 @@ public class GameManager : MonoBehaviour
         StartCoroutine(OnExitReachedRoutine());
     }
 
+    private Transition transition;
+
     private IEnumerator OnExitReachedRoutine() {
 
-        if (currentGridIndex == grids.Length) {
+        if (currentGridIndex == grids.Length - 1) {
             //AudioManager.PlayPlayerWon();
         } else {
             AudioManager.PlayLadder();
         }
 
-        Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
+        transition = Instantiate(transitionPrefab).GetComponent<Transition>();
 
         yield return new WaitForSeconds(1f);
 
@@ -182,9 +184,9 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update() {
-        if(gameEnd) {
+        if(gameIsOver) {
             if(Input.anyKeyDown) {
-                gameEnd = false;
+                gameIsOver = false;
                 StartCoroutine(DoGameEnd());
             }
             return;
@@ -197,7 +199,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DoGameEnd() {
 
-        Transition transition = Instantiate(transitionPrefab).GetComponent<Transition>();
+        if (playerIsDead == false) {
+            if (transition) transition.OnGridLoaded();
+            else transition = null;
+        }
+
+        Transition newTransition = Instantiate(transitionPrefab).GetComponent<Transition>();
 
         yield return new WaitForSeconds(1f);
 
@@ -210,10 +217,12 @@ public class GameManager : MonoBehaviour
         Destroy(gridParent);
         gridParent = null;
 
-        currentGridIndex = 0;
+        if(playerIsDead == false) {
+            currentGridIndex = 0;
+        }
         StartGame();
 
-        transition.OnGridLoaded();
+        newTransition.OnGridLoaded();
     }
 
     private IEnumerator MoveUnitToTile(Unit unit, Tile tile) {

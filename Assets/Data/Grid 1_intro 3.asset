@@ -17,7 +17,9 @@ MonoBehaviour:
   width: 6
   height: 5
   playerSpawn: {x: 0, y: 0}
-  exitSpawn: {x: 4, y: 1}
+  exitSpawn: {x: 4, y: 4}
   units:
-  - {fileID: 11400000, guid: de472a3f7337b9d42897b4c5b3fb64f4, type: 2}
   - {fileID: 11400000, guid: 1b157293333355943813a898f99ff206, type: 2}
+  - {fileID: 11400000, guid: de472a3f7337b9d42897b4c5b3fb64f4, type: 2}
+  - {fileID: 11400000, guid: a5eba802b43033e498b4aa5991192c3f, type: 2}
+  - {fileID: 11400000, guid: fa074a4582c396c44b349a63eafbd112, type: 2}

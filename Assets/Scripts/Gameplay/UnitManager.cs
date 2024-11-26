@@ -29,13 +29,17 @@ public class UnitManager
             // list of valid tiles
             List<Vector2Int> validStartPoints = new List<Vector2Int>();
             foreach (Vector2Int stPoint in unitData.Startpoints) {
+                if (stPoint.x >= GameManager.Instance.Grid.GetLength(0) ||
+                    stPoint.y >= GameManager.Instance.Grid.GetLength(1)) {
+                    continue;
+                }
                 if (GameManager.Instance.Grid[stPoint.x, stPoint.y].Unit == null) {
                     validStartPoints.Add(stPoint);
                 }
             }
 
             if (validStartPoints.Count == 0) {
-                Debug.Log("No valid paths available");
+                //Debug.Log("No valid paths available");
                 continue;
             }
 
@@ -48,7 +52,6 @@ public class UnitManager
             GameManager.Instance.Grid[startPoint.x, startPoint.y].Unit = element;
             element.Initialize(unitData.Movements);  // Use unitData instead of unitDatas[0]
 
-            Debug.Log("Creating " + element.name);
             units.Add(element);
         }
     }
@@ -58,7 +61,6 @@ public class UnitManager
     }
 
     public IEnumerator Update(Action moveCallback) {
-        Debug.Log("Update");
         foreach (var unit in units) {
             yield return Move(unit, moveCallback);
         }
@@ -83,26 +85,14 @@ public class UnitManager
         int randomIndex = UnityEngine.Random.Range(0, validPaths.Count);
         UnitTypes.Path selectedPath = validPaths[randomIndex];
 
-        Debug.Log(unit.name);
-
-        foreach (var tile in selectedPath.directions) {
-            Debug.Log(tile.ToString());
-        }
-
         List<Vector2Int> tiles = selectedPathTiles(unit, selectedPath);
 
-        foreach(var tile in tiles) {
-            Debug.Log(tile.ToString());
-        }
-
         foreach (var tile in tiles) {
-
 
             GameManager.AudioManager.PlayUnitMove();
             yield return MoveUnitToTile(unit, GameManager.Instance.Grid[tile.x, tile.y], GameManager.Instance.UnitMoveDuration);
 
             if (GameManager.Instance.Grid[tile.x, tile.y].Unit == GameManager.Instance.Player) {
-                Debug.Log("End game called from " + unit.name + " going on " + tile.ToString());
                 GameManager.Instance.EndGame(true);
             }
 
